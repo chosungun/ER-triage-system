@@ -1,0 +1,144 @@
+/* src/styles/globals.css */
+/* REM Brand: Flat Clinical UI + Blue Monochrome System */
+
+:root {
+  /* Primary Blue */
+  --primary-600: #2E53E5;
+  --primary-500: #3D6BFF;
+  --primary-400: #6D8BFF;
+  --primary-300: #9BB3FF;
+  --primary-200: #CED9FF;
+  --primary-100: #EAEFFF;
+
+  /* Neutral Greys */
+  --neutral-900: #1B1C1F;
+  --neutral-800: #2A2C30;
+  --neutral-700: #3C3E44;
+  --neutral-600: #585C63;
+  --neutral-500: #8D9198;
+  --neutral-400: #C3C6CC;
+  --neutral-300: #E0E3E8;
+  --neutral-200: #EDF0F4;
+  --neutral-100: #F5F7FA;
+  --neutral-50: #FFFFFF;
+
+  /* Semantic - Error */
+  --error-500: #E85468;
+  --error-300: #F3A8B2;
+  --error-100: #FCE5E9;
+
+  /* Semantic - Warning */
+  --warning-500: #F7B84B;
+  --warning-300: #FFDFA0;
+  --warning-100: #FFF6DE;
+
+  /* Semantic - Success */
+  --success-500: #52C39A;
+  --success-300: #A9E4CE;
+  --success-100: #E6F5EF;
+
+  /* Supportive Blues (Charts) */
+  --blue-a: #244BCC;
+  --blue-b: #5A83FF;
+  --blue-c: #8FB2FF;
+  --blue-d: #C1D4FF;
+
+  /* Accent Colors */
+  --accent-indigo: #5A5FFF;
+  --accent-light: #E9EBFF;
+  --accent-air-blue: #B8CCFF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* 전체 스크롤 방지 */
+}
+
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page {
+  padding: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hero {
+  margin-top: 40px;
+}
+
+.hero h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--neutral-900);
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--neutral-600);
+  line-height: 1.6;
+}
+
+/* 링크 스타일 */
+a {
+  color: var(--primary-500);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-600);
+}
+
+/* 버튼 기본 스타일 */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+button:focus {
+  outline: 2px solid var(--primary-400);
+  outline-offset: 2px;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neutral-200);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-500);
+}
+
+/* 선택 영역 스타일 */
+::selection {
+  background: var(--primary-200);
+  color: var(--neutral-900);
+}
