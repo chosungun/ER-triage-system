@@ -77,13 +77,13 @@ function Navbar() {
         <div className="navbar__divider" />
 
         {/* 프로필 */}
-        <button className="navbar__profile-btn">
+        <NavLink to="/profile" className="navbar__profile-btn">
           <div className="navbar__avatar">
             <User size={16} />
           </div>
           <span className="navbar__profile-name">Demo Profile</span>
           <ChevronDown size={14} />
-        </button>
+        </NavLink>
       </div>
     </header>
   );

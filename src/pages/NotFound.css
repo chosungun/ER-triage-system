@@ -1,0 +1,360 @@
+/* src/pages/NotFound.css */
+/* REM Brand: Cyberpunk SF Style - No Animation */
+
+.notfound-page {
+    height: calc(100vh - 56px);
+    background: linear-gradient(135deg, #1B1C1F 0%, #2A2C30 50%, #1B1C1F 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    font-family: "Pretendard", system-ui, sans-serif;
+  }
+  
+  /* 배경 그리드 패턴 */
+  .cyber-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(61, 107, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(61, 107, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  
+  /* 코너 장식 */
+  .corner-decor {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(61, 107, 255, 0.2);
+  }
+  
+  .corner-decor.top-left {
+    top: 20px;
+    left: 20px;
+    border-right: none;
+    border-bottom: none;
+  }
+  
+  .corner-decor.top-right {
+    top: 20px;
+    right: 20px;
+    border-left: none;
+    border-bottom: none;
+  }
+  
+  .corner-decor.bottom-left {
+    bottom: 20px;
+    left: 20px;
+    border-right: none;
+    border-top: none;
+  }
+  
+  .corner-decor.bottom-right {
+    bottom: 20px;
+    right: 20px;
+    border-left: none;
+    border-top: none;
+  }
+  
+  /* 메인 컨테이너 */
+  .notfound-container {
+    background: rgba(27, 28, 31, 0.95);
+    border: 1px solid rgba(61, 107, 255, 0.3);
+    border-radius: 4px;
+    padding: 40px 48px;
+    max-width: 480px;
+    width: 90%;
+    position: relative;
+    box-shadow: 
+      0 0 40px rgba(61, 107, 255, 0.1),
+      inset 0 0 60px rgba(61, 107, 255, 0.02);
+  }
+  
+  /* 스캔라인 장식 */
+  .scanline-top,
+  .scanline-bottom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .scanline-bottom {
+    margin-bottom: 0;
+    margin-top: 24px;
+  }
+  
+  .scan-dot {
+    width: 6px;
+    height: 6px;
+    background: #3D6BFF;
+    border-radius: 50%;
+  }
+  
+  .scan-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #3D6BFF, rgba(61, 107, 255, 0.2), #3D6BFF);
+  }
+  
+  /* 에러 코드 디스플레이 */
+  .error-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .error-bracket {
+    font-size: 48px;
+    font-weight: 300;
+    color: rgba(61, 107, 255, 0.4);
+    font-family: "Courier New", monospace;
+  }
+  
+  .error-code {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  
+  .error-prefix {
+    font-size: 12px;
+    font-weight: 600;
+    color: #E85468;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  
+  .error-number {
+    font-size: 64px;
+    font-weight: 800;
+    color: #3D6BFF;
+    line-height: 1;
+    letter-spacing: -2px;
+    text-shadow: 0 0 20px rgba(61, 107, 255, 0.5);
+  }
+  
+  /* 귀여운 로봇 */
+  .robot-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .robot-head {
+    position: relative;
+    background: linear-gradient(135deg, #2A2C30 0%, #3C3E44 100%);
+    border: 2px solid rgba(61, 107, 255, 0.4);
+    border-radius: 16px;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .robot-antenna {
+    position: absolute;
+    top: -20px;
+    color: #F7B84B;
+  }
+  
+  .robot-face {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .robot-eye {
+    width: 28px;
+    height: 28px;
+    background: #1B1C1F;
+    border: 2px solid #3D6BFF;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6D8BFF;
+  }
+  
+  .robot-eye.left {
+    transform: rotate(-10deg);
+  }
+  
+  .robot-eye.right {
+    transform: rotate(10deg);
+  }
+  
+  .robot-mouth {
+    color: #E85468;
+    opacity: 0.8;
+  }
+  
+  .robot-body {
+    background: linear-gradient(135deg, #3C3E44 0%, #2A2C30 100%);
+    border: 2px solid rgba(61, 107, 255, 0.3);
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: #3D6BFF;
+  }
+  
+  /* 메시지 블록 */
+  .message-block {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  .message-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: rgba(232, 84, 104, 0.1);
+    border: 1px solid rgba(232, 84, 104, 0.3);
+    border-radius: 4px;
+    margin-bottom: 16px;
+    color: #E85468;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  
+  .message-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0 0 12px 0;
+  }
+  
+  .message-desc {
+    font-size: 14px;
+    color: #8D9198;
+    line-height: 1.7;
+    margin: 0;
+  }
+  
+  /* 상태 패널 */
+  .status-panel {
+    background: rgba(61, 107, 255, 0.05);
+    border: 1px solid rgba(61, 107, 255, 0.15);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-family: "Courier New", monospace;
+  }
+  
+  .status-label {
+    color: #585C63;
+    letter-spacing: 1px;
+  }
+  
+  .status-value {
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+  
+  .status-value.online {
+    background: rgba(82, 195, 154, 0.15);
+    color: #52C39A;
+    border: 1px solid rgba(82, 195, 154, 0.3);
+  }
+  
+  .status-value.error {
+    background: rgba(232, 84, 104, 0.15);
+    color: #E85468;
+    border: 1px solid rgba(232, 84, 104, 0.3);
+  }
+  
+  .status-value.ready {
+    background: rgba(61, 107, 255, 0.15);
+    color: #3D6BFF;
+    border: 1px solid rgba(61, 107, 255, 0.3);
+  }
+  
+  /* 액션 버튼 */
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .cyber-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: "Pretendard", system-ui, sans-serif;
+  }
+  
+  .cyber-btn.primary {
+    background: linear-gradient(135deg, #3D6BFF 0%, #2E53E5 100%);
+    color: #FFFFFF;
+    border-color: #3D6BFF;
+    box-shadow: 0 4px 16px rgba(61, 107, 255, 0.3);
+  }
+  
+  .cyber-btn.primary:hover {
+    background: linear-gradient(135deg, #2E53E5 0%, #244BCC 100%);
+  }
+  
+  .cyber-btn.secondary {
+    background: transparent;
+    color: #8D9198;
+    border-color: rgba(141, 145, 152, 0.3);
+  }
+  
+  .cyber-btn.secondary:hover {
+    color: #3D6BFF;
+    border-color: rgba(61, 107, 255, 0.5);
+    background: rgba(61, 107, 255, 0.05);
+  }
+  
+  /* 반응형 */
+  @media (max-width: 480px) {
+    .notfound-container {
+      padding: 32px 24px;
+    }
+  
+    .error-number {
+      font-size: 48px;
+    }
+  
+    .error-bracket {
+      font-size: 36px;
+    }
+  
+    .action-buttons {
+      flex-direction: column;
+    }
+  
+    .corner-decor {
+      width: 40px;
+      height: 40px;
+    }
+  }

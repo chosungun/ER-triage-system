@@ -1,158 +1,584 @@
-/* src/pages/About.css */
+/* src/pages/Viewer.css */
 /* REM Brand: Flat Clinical UI + Blue Monochrome System */
+/* 헤더 높이: 56px 고려, 스크롤 완전 제거 */
 
-.about-page {
-    height: calc(100vh - 56px);
-    background: #F5F7FA;
-    padding: 24px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+.viewer-page {
+  width: 100%;
+  height: calc(100vh - 56px);
+  background: #1B1C1F;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ===== 좌측: 메인 X-ray 뷰어 ===== */
+.viewer-main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 뷰어 툴바 */
+.viewer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #2A2C30;
+  border-bottom: 1px solid #3C3E44;
+  flex-shrink: 0;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #3C3E44;
+  border: 1px solid #585C63;
+  border-radius: 6px;
+  color: #C3C6CC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toolbar-btn:hover {
+  background: #585C63;
+  color: #FFFFFF;
+}
+
+.toolbar-btn.mode-btn {
+  width: auto;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.toolbar-btn.mode-btn.active {
+  background: #3D6BFF;
+  border-color: #3D6BFF;
+  color: #FFFFFF;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #585C63;
+}
+
+.toolbar-icon {
+  color: #8D9198;
+}
+
+.toolbar-slider {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #585C63;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.toolbar-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #3D6BFF;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.toolbar-value {
+  font-size: 12px;
+  color: #8D9198;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* X-ray 캔버스 영역 */
+.viewer-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1B1C1F 0%, #2A2C30 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+.xray-display {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  position: relative;
+}
+
+.xray-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #585C63;
+}
+
+.xray-placeholder svg {
+  opacity: 0.3;
+}
+
+.xray-placeholder p {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.xray-placeholder span {
+  font-size: 13px;
+  color: #8D9198;
+}
+
+/* 히트맵 오버레이 시뮬레이션 */
+.heatmap-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.heatmap-spot {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 84, 104, 0.8) 0%, rgba(232, 84, 104, 0) 70%);
+}
+
+.heatmap-spot.spot-1 {
+  width: 120px;
+  height: 120px;
+  top: 35%;
+  left: 40%;
+}
+
+.heatmap-spot.spot-2 {
+  width: 80px;
+  height: 80px;
+  top: 50%;
+  left: 55%;
+  background: radial-gradient(circle, rgba(247, 184, 75, 0.8) 0%, rgba(247, 184, 75, 0) 70%);
+}
+
+/* 메타 정보 바 */
+.viewer-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 16px;
+  background: #2A2C30;
+  border-top: 1px solid #3C3E44;
+  flex-shrink: 0;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: #8D9198;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meta-value {
+  font-size: 13px;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* ===== 우측: AI Assist Sidebar ===== */
+.viewer-sidebar {
+  background: #FFFFFF;
+  border-left: 1px solid #E0E3E8;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 사이드바 섹션 - 두 개가 화면을 꽉 채우도록 */
+.sidebar-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #E0E3E8;
+  overflow: hidden;
+}
+
+.sidebar-section:last-of-type {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px;
+  background: #F5F7FA;
+  border: none;
+  flex-shrink: 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1B1C1F;
+}
+
+.section-title svg {
+  color: #3D6BFF;
+}
+
+.section-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 컨트롤 행 */
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-row.column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.control-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3C3E44;
+}
+
+.control-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3D6BFF;
+}
+
+/* 토글 버튼 */
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #F5F7FA;
+  border: 1px solid #E0E3E8;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8D9198;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: #EDF0F4;
+}
+
+.toggle-btn.active {
+  background: #EAEFFF;
+  border-color: #3D6BFF;
+  color: #3D6BFF;
+}
+
+/* 슬라이더 */
+.slider {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #E0E3E8;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3D6BFF;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(61, 107, 255, 0.3);
+}
+
+.slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.slider:disabled::-webkit-slider-thumb {
+  background: #C3C6CC;
+}
+
+/* 체크박스 그룹 */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+  border: 2px solid #E0E3E8;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-item input[type="checkbox"]:checked + .checkbox-custom {
+  background: #3D6BFF;
+  border-color: #3D6BFF;
+  color: #FFFFFF;
+}
+
+.checkbox-item input[type="checkbox"]:disabled + .checkbox-custom {
+  background: #F5F7FA;
+  border-color: #E0E3E8;
+}
+
+.checkbox-label {
+  font-size: 13px;
+  color: #3C3E44;
+}
+
+/* 레이팅 슬라이더 */
+.rating-slider {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.rating-btn {
+  flex: 1;
+  padding: 10px 0;
+  background: #F5F7FA;
+  border: 1px solid #E0E3E8;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8D9198;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rating-btn:hover {
+  background: #EDF0F4;
+}
+
+.rating-btn.active {
+  background: #3D6BFF;
+  border-color: #3D6BFF;
+  color: #FFFFFF;
+}
+
+/* 피드백 텍스트 영역 */
+.feedback-textarea {
+  width: 100%;
+  padding: 12px;
+  background: #F5F7FA;
+  border: 1px solid #E0E3E8;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #3C3E44;
+  resize: none;
+  transition: border-color 0.2s ease;
+  flex: 1;
+  min-height: 60px;
+}
+
+.feedback-textarea:focus {
+  outline: none;
+  border-color: #3D6BFF;
+  background: #FFFFFF;
+}
+
+.feedback-textarea::placeholder {
+  color: #8D9198;
+}
+
+/* 피드백 제출 버튼 */
+.submit-feedback-btn {
+  width: 100%;
+  padding: 12px;
+  background: #3D6BFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.submit-feedback-btn:hover {
+  background: #2E53E5;
+}
+
+/* 하단 주의 문구 */
+.sidebar-disclaimer {
+  padding: 12px 16px;
+  background: #FFF6DE;
+  border-top: 1px solid #F7B84B;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.sidebar-disclaimer svg {
+  color: #F7B84B;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.sidebar-disclaimer p {
+  font-size: 11px;
+  color: #585C63;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 1200px) {
+  .viewer-page {
+    grid-template-columns: 1fr 280px;
   }
-  
-  .about-hero {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto 24px;
-    flex-shrink: 0;
+
+  .viewer-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  
-  .about-hero h1 {
-    font-size: 28px;
-    font-weight: 800;
-    color: #1B1C1F;
-    margin: 0 0 8px 0;
+
+  .toolbar-group:last-child {
+    flex-wrap: wrap;
   }
-  
-  .about-subtitle {
-    font-size: 18px;
-    color: #585C63;
-    margin: 0;
-    line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .viewer-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
   }
-  
-  .about-content {
-    max-width: 800px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  .about-card {
-    background: #FFFFFF;
-    border-radius: 12px;
-    border: 1px solid #E0E3E8;
-    padding: 20px;
-  }
-  
-  .about-card.disclaimer {
-    grid-column: 1 / -1;
-    background: #FFF6DE;
-    border-color: #F7B84B;
-  }
-  
-  .about-card-icon {
-    font-size: 24px;
-    margin-bottom: 12px;
-  }
-  
-  .about-card h2 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1B1C1F;
-    margin: 0 0 12px 0;
-  }
-  
-  .about-card p {
-    font-size: 14px;
-    color: #585C63;
-    line-height: 1.6;
-    margin: 0;
-  }
-  
-  .tech-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .tech-list li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 15px;
-    color: #3C3E44;
-  }
-  
-  .tech-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    background: #EAEFFF;
-    color: #3D6BFF;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    min-width: 60px;
-    text-align: center;
-  }
-  
-  .feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-  
-  .feature-list li {
-    font-size: 14px;
-    color: #3C3E44;
-    padding: 12px 16px;
-    background: #F5F7FA;
-    border-radius: 8px;
-    border-left: 3px solid #3D6BFF;
-  }
-  
-  .about-footer {
-    text-align: center;
-    margin-top: 48px;
-    padding-top: 24px;
+
+  .viewer-sidebar {
+    max-height: 280px;
+    border-left: none;
     border-top: 1px solid #E0E3E8;
+    flex-direction: row;
   }
-  
-  .about-footer p {
-    font-size: 14px;
-    color: #8D9198;
-    margin: 0 0 4px 0;
+
+  .sidebar-section {
+    flex: 1;
+    border-bottom: none;
+    border-right: 1px solid #E0E3E8;
   }
-  
-  .about-version {
-    font-size: 12px;
-    color: #C3C6CC;
+
+  .sidebar-section:last-of-type {
+    border-right: none;
   }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .about-page {
-      padding: 24px 16px;
-    }
-  
-    .about-hero h1 {
-      font-size: 28px;
-    }
-  
-    .about-card {
-      padding: 24px;
-    }
-  
-    .feature-list {
-      grid-template-columns: 1fr;
-    }
+
+  .sidebar-disclaimer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
+}
+
+@media (max-width: 768px) {
+  .viewer-page {
+    height: calc(100vh - 52px);
+  }
+
+  .viewer-toolbar {
+    padding: 8px 12px;
+    overflow-x: auto;
+  }
+
+  .toolbar-btn.mode-btn {
+    font-size: 11px;
+    padding: 0 8px;
+  }
+
+  .viewer-meta {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .meta-item {
+    flex: 1;
+    min-width: calc(50% - 6px);
+  }
+
+  .viewer-sidebar {
+    flex-direction: column;
+    max-height: 50vh;
+  }
+
+  .sidebar-section {
+    border-right: none;
+    border-bottom: 1px solid #E0E3E8;
+  }
+}

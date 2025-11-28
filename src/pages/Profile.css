@@ -1,0 +1,373 @@
+/* src/pages/Profile.css */
+/* REM Brand: Flat Clinical UI + Blue Monochrome System */
+
+.profile-page {
+    height: calc(100vh - 56px);
+    background: #F5F7FA;
+    padding: 24px;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  .profile-container {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* ===== 공통 카드 스타일 ===== */
+  .profile-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #E0E3E8;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #E0E3E8;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  
+  .card-header svg {
+    color: #3D6BFF;
+  }
+  
+  .card-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1B1C1F;
+    margin: 0;
+  }
+  
+  /* ===== 사용자 정보 카드 ===== */
+  .user-card {
+    gap: 20px;
+  }
+  
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .avatar-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3D6BFF 0%, #2E53E5 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+  }
+  
+  .demo-badge {
+    display: inline-block;
+    padding: 4px 16px;
+    background: #EAEFFF;
+    color: #3D6BFF;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #EDF0F4;
+  }
+  
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #8D9198;
+    font-weight: 500;
+  }
+  
+  .detail-label svg {
+    color: #C3C6CC;
+  }
+  
+  .detail-value {
+    font-size: 14px;
+    color: #1B1C1F;
+    font-weight: 600;
+  }
+  
+  .detail-value.session-active {
+    color: #52C39A;
+  }
+  
+  /* 접근 권한 */
+  .access-info {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #E0E3E8;
+  }
+  
+  .access-info h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8D9198;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .permission-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .permission-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  
+  .permission-list li.permitted {
+    background: #E6F5EF;
+    color: #52C39A;
+  }
+  
+  .permission-list li.restricted {
+    background: #FCE5E9;
+    color: #E85468;
+  }
+  
+  /* ===== AI 사용 안내 카드 ===== */
+  .guidance-card {
+    overflow-y: auto;
+  }
+  
+  /* 경고 배너 */
+  .warning-banner {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #FFF6DE;
+    border: 1px solid #F7B84B;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  
+  .warning-banner svg {
+    color: #F7B84B;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .warning-content strong {
+    display: block;
+    font-size: 14px;
+    color: #1B1C1F;
+    margin-bottom: 6px;
+  }
+  
+  .warning-content p {
+    font-size: 13px;
+    color: #585C63;
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  /* 가이드 섹션들 */
+  .guidance-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+  }
+  
+  .guidance-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #F5F7FA;
+    border-radius: 10px;
+    border-left: 3px solid #3D6BFF;
+  }
+  
+  .guidance-icon {
+    width: 40px;
+    height: 40px;
+    background: #EAEFFF;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3D6BFF;
+    flex-shrink: 0;
+  }
+  
+  .guidance-icon.intended {
+    background: #E6F5EF;
+    color: #52C39A;
+  }
+  
+  .guidance-icon.warning {
+    background: #FCE5E9;
+    color: #E85468;
+  }
+  
+  .guidance-content {
+    flex: 1;
+  }
+  
+  .guidance-content h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1B1C1F;
+    margin: 0 0 8px 0;
+  }
+  
+  .guidance-content p {
+    font-size: 13px;
+    color: #585C63;
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  .guidance-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .guidance-content li {
+    font-size: 13px;
+    color: #585C63;
+    padding-left: 16px;
+    position: relative;
+  }
+  
+  .guidance-content li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #3D6BFF;
+    font-weight: bold;
+  }
+  
+  /* 버전 정보 */
+  .version-info {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #E0E3E8;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  
+  .version-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  
+  .version-row span:first-child {
+    color: #8D9198;
+  }
+  
+  .version-row span:last-child {
+    color: #585C63;
+    font-weight: 500;
+  }
+  
+  /* ===== 반응형 ===== */
+  @media (max-width: 1024px) {
+    .profile-container {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+  
+    .user-card {
+      max-height: 300px;
+    }
+  
+    .guidance-card {
+      max-height: calc(100vh - 56px - 300px - 72px);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .profile-page {
+      padding: 16px;
+      overflow-y: auto;
+    }
+  
+    .profile-container {
+      grid-template-rows: auto auto;
+      gap: 16px;
+      height: auto;
+    }
+  
+    .profile-card {
+      padding: 20px;
+    }
+  
+    .user-card,
+    .guidance-card {
+      max-height: none;
+    }
+  
+    .warning-banner {
+      flex-direction: column;
+      gap: 12px;
+    }
+  
+    .guidance-item {
+      flex-direction: column;
+      gap: 12px;
+    }
+  
+    .guidance-icon {
+      width: 36px;
+      height: 36px;
+    }
+  }

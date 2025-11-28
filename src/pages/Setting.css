@@ -1,0 +1,332 @@
+/* src/pages/Setting.css */
+/* REM Brand: Flat Clinical UI + Blue Monochrome System */
+
+.setting-page {
+    height: calc(100vh - 56px);
+    background: #F5F7FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+  }
+  
+  .setting-container {
+    background: #FFFFFF;
+    border-radius: 16px;
+    border: 1px solid #E0E3E8;
+    padding: 32px;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* 헤더 */
+  .setting-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #E0E3E8;
+  }
+  
+  .setting-header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #EAEFFF 0%, #CED9FF 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3D6BFF;
+  }
+  
+  .setting-header-text h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1B1C1F;
+    margin: 0 0 4px 0;
+  }
+  
+  .setting-header-text p {
+    font-size: 14px;
+    color: #8D9198;
+    margin: 0;
+  }
+  
+  /* 설정 그리드 */
+  .setting-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  /* 설정 카드 */
+  .setting-card {
+    background: #F5F7FA;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .setting-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #3D6BFF;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  
+  .setting-card-header svg {
+    flex-shrink: 0;
+  }
+  
+  .setting-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .setting-description {
+    font-size: 13px;
+    color: #8D9198;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  /* Language 토글 */
+  .language-toggle {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .lang-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: #FFFFFF;
+    border: 1px solid #E0E3E8;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #585C63;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  
+  .lang-btn:hover {
+    border-color: #3D6BFF;
+    color: #3D6BFF;
+  }
+  
+  .lang-btn.active {
+    background: #3D6BFF;
+    border-color: #3D6BFF;
+    color: #FFFFFF;
+  }
+  
+  /* 슬라이더 */
+  .slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #E0E3E8;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #3D6BFF;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(61, 107, 255, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
+  .slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #3D6BFF;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(61, 107, 255, 0.3);
+  }
+  
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #8D9198;
+  }
+  
+  .slider-value {
+    font-weight: 600;
+    color: #3D6BFF;
+    background: #EAEFFF;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  
+  /* 히트맵 프리뷰 */
+  .opacity-preview {
+    height: 8px;
+    background: #E0E3E8;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  
+  .opacity-preview-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3D6BFF 0%, #E85468 50%, #F7B84B 100%);
+    border-radius: 4px;
+    transition: opacity 0.2s ease;
+  }
+  
+  /* Mode 선택 */
+  .mode-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .mode-btn {
+    padding: 10px 16px;
+    background: #FFFFFF;
+    border: 1px solid #E0E3E8;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #585C63;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+  }
+  
+  .mode-btn:hover {
+    border-color: #3D6BFF;
+    color: #3D6BFF;
+  }
+  
+  .mode-btn.active {
+    background: #EAEFFF;
+    border-color: #3D6BFF;
+    color: #3D6BFF;
+  }
+  
+  /* 푸터 */
+  .setting-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #E0E3E8;
+  }
+  
+  .current-settings {
+    flex: 1;
+  }
+  
+  .settings-summary {
+    font-size: 13px;
+    color: #8D9198;
+    background: #F5F7FA;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  
+  .reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #FFFFFF;
+    border: 1px solid #E0E3E8;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #585C63;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .reset-btn:hover {
+    background: #FCE5E9;
+    border-color: #E85468;
+    color: #E85468;
+  }
+  
+  /* 반응형 */
+  @media (max-width: 768px) {
+    .setting-page {
+      padding: 16px;
+    }
+  
+    .setting-container {
+      padding: 24px;
+      gap: 20px;
+    }
+  
+    .setting-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .setting-header-text h1 {
+      font-size: 20px;
+    }
+  
+    .setting-footer {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+  
+    .current-settings {
+      text-align: center;
+    }
+  
+    .reset-btn {
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .language-toggle {
+      flex-direction: column;
+    }
+  
+    .settings-summary {
+      font-size: 12px;
+    }
+  }

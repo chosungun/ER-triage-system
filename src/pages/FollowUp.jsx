@@ -1,316 +1,315 @@
+// src/pages/FollowUp.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  User,
+  Calendar,
+  Clock,
+  Eye,
+  Layers,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Activity,
+  AlertCircle,
+  CheckCircle
+} from "lucide-react";
 import "./FollowUp.css";
 
 // 샘플 환자 데이터
-const samplePatients = [
+const patientInfo = {
+  id: "P-2024-001",
+  name: "김영수",
+  age: 67,
+  gender: "남"
+};
+
+// 샘플 X-ray 기록 데이터
+const xrayHistory = [
   {
-    id: "P-2024-001",
-    name: "김영수",
-    age: 67,
-    gender: "남",
-    priority: "critical",
-    score: 92,
-    diagnosis: "Pneumonia (폐렴) 의심",
-    status: "pending",
+    id: 1,
+    date: "2024-11-28",
     time: "09:15",
-    chiefComplaint: "호흡곤란, 발열",
-    bloodPressure: "140/90",
-    heartRate: "98",
-    temperature: "38.5°C",
-    oxygenSat: "94%",
-    recommendations: [
-      "즉시 흉부 CT 촬영 권장",
-      "항생제 투여 고려",
-      "산소 포화도 모니터링"
-    ]
+    lesionScore: 92,
+    diagnosis: "Pneumonia (폐렴)",
+    status: "critical",
+    findings: ["좌측 하엽 침윤", "흉수 소량"],
+    aiConfidence: 94
   },
   {
-    id: "P-2024-002",
-    name: "이미영",
-    age: 45,
-    gender: "여",
-    priority: "high",
-    score: 78,
-    diagnosis: "Cardiomegaly (심비대)",
-    status: "analyzed",
-    time: "09:32",
-    chiefComplaint: "흉통, 호흡곤란",
-    bloodPressure: "150/95",
-    heartRate: "88",
-    temperature: "36.8°C",
-    oxygenSat: "97%",
-    recommendations: [
-      "심장 초음파 검사 권장",
-      "심전도 모니터링",
-      "순환기내과 협진 요청"
-    ]
+    id: 2,
+    date: "2024-11-21",
+    time: "14:30",
+    lesionScore: 78,
+    diagnosis: "Pneumonia 진행",
+    status: "high",
+    findings: ["좌측 하엽 침윤 증가"],
+    aiConfidence: 91
   },
   {
-    id: "P-2024-003",
-    name: "박철호",
-    age: 52,
-    gender: "남",
-    priority: "normal",
-    score: 45,
-    diagnosis: "Nodule (결절) 발견",
-    status: "reviewing",
-    time: "10:05",
-    chiefComplaint: "건강검진",
-    bloodPressure: "125/80",
-    heartRate: "72",
-    temperature: "36.5°C",
-    oxygenSat: "99%",
-    recommendations: [
-      "추가 CT 검사 권장",
-      "3개월 후 추적 검사",
-      "흡연력 확인 필요"
-    ]
-  },
-  {
-    id: "P-2024-004",
-    name: "최수진",
-    age: 34,
-    gender: "여",
-    priority: "low",
-    score: 22,
-    diagnosis: "정상 소견",
-    status: "analyzed",
-    time: "10:28",
-    chiefComplaint: "건강검진",
-    bloodPressure: "118/75",
-    heartRate: "68",
-    temperature: "36.4°C",
-    oxygenSat: "99%",
-    recommendations: [
-      "특이 소견 없음",
-      "정기 검진 권장"
-    ]
-  },
-  {
-    id: "P-2024-005",
-    name: "정민준",
-    age: 71,
-    gender: "남",
-    priority: "critical",
-    score: 88,
-    diagnosis: "Pleural Effusion (흉수)",
-    status: "pending",
+    id: 3,
+    date: "2024-11-14",
     time: "10:45",
-    chiefComplaint: "호흡곤란, 기침",
-    bloodPressure: "135/85",
-    heartRate: "92",
-    temperature: "37.8°C",
-    oxygenSat: "92%",
-    recommendations: [
-      "흉수 천자 고려",
-      "원인 감별 위한 추가 검사",
-      "호흡기내과 협진"
-    ]
+    lesionScore: 65,
+    diagnosis: "Pneumonia 의심",
+    status: "high",
+    findings: ["좌측 하엽 경미한 음영"],
+    aiConfidence: 87
+  },
+  {
+    id: 4,
+    date: "2024-11-07",
+    time: "11:20",
+    lesionScore: 45,
+    diagnosis: "경미한 이상 소견",
+    status: "normal",
+    findings: ["경미한 기관지 확장"],
+    aiConfidence: 82
+  },
+  {
+    id: 5,
+    date: "2024-10-28",
+    time: "09:00",
+    lesionScore: 22,
+    diagnosis: "정상 소견",
+    status: "low",
+    findings: ["특이 소견 없음"],
+    aiConfidence: 95
   }
 ];
 
-// 우선순위별 통계 계산
-const getStats = (patients) => {
-  return {
-    total: patients.length,
-    critical: patients.filter(p => p.priority === "critical").length,
-    high: patients.filter(p => p.priority === "high").length,
-    pending: patients.filter(p => p.status === "pending").length
-  };
-};
-
-// 우선순위 라벨
-const priorityLabels = {
-  critical: "긴급",
-  high: "높음",
-  normal: "보통",
-  low: "낮음"
-};
-
-// 상태 라벨
-const statusLabels = {
-  pending: "대기중",
-  analyzed: "분석완료",
-  reviewing: "검토중"
-};
+// AI 판독 기록 로그
+const reportHistory = [
+  { date: "2024-11-28", action: "Critical 판정", detail: "즉시 치료 필요" },
+  { date: "2024-11-21", action: "병변 진행 감지", detail: "침윤 범위 확대" },
+  { date: "2024-11-14", action: "이상 소견 발견", detail: "추적 관찰 권장" },
+  { date: "2024-11-07", action: "경미한 변화", detail: "정기 검진 권장" },
+  { date: "2024-10-28", action: "정상 판정", detail: "특이 소견 없음" }
+];
 
 function FollowUp() {
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const stats = getStats(samplePatients);
+  const navigate = useNavigate();
+  const [selectedCurrent, setSelectedCurrent] = useState(xrayHistory[0]);
+  const [selectedPast, setSelectedPast] = useState(xrayHistory[1]);
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
-  const handlePatientClick = (patient) => {
-    setSelectedPatient(patient);
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "critical": return "#E85468";
+      case "high": return "#F7B84B";
+      case "normal": return "#52C39A";
+      case "low": return "#3D6BFF";
+      default: return "#8D9198";
+    }
   };
 
-  const getPriorityClass = (score) => {
-    if (score >= 80) return "critical";
-    if (score >= 60) return "high";
-    if (score >= 40) return "normal";
-    return "low";
+  const getScoreChange = () => {
+    if (!selectedCurrent || !selectedPast) return null;
+    return selectedCurrent.lesionScore - selectedPast.lesionScore;
+  };
+
+  const scoreChange = getScoreChange();
+
+  const handleOpenViewer = () => {
+    navigate("/viewer");
   };
 
   return (
-    <main className="dashboard">
-      {/* 환자 테이블 섹션 */}
-      <section className="patient-table-section">
-        <div className="section-header">
-          <h2>🏥 환자 대기 목록</h2>
-          <div className="stats-row">
-            <span>전체<strong>{stats.total}</strong>명</span>
-            <span className="stat-divider">|</span>
-            <span>긴급<strong style={{ color: "#E85468" }}>{stats.critical}</strong></span>
-            <span className="stat-divider">|</span>
-            <span>높음<strong style={{ color: "#F7B84B" }}>{stats.high}</strong></span>
-            <span className="stat-divider">|</span>
-            <span>대기<strong style={{ color: "#3D6BFF" }}>{stats.pending}</strong></span>
+    <main className="followup-page">
+      {/* 상단 헤더 영역 */}
+      <header className="followup-header">
+        <div className="patient-info-bar">
+          <div className="patient-avatar">
+            <User size={20} />
+          </div>
+          <div className="patient-details">
+            <span className="patient-name">{patientInfo.name}</span>
+            <span className="patient-meta">
+              {patientInfo.id} | {patientInfo.age}세 | {patientInfo.gender}
+            </span>
           </div>
         </div>
+        <button className="viewer-btn" onClick={handleOpenViewer}>
+          <Maximize2 size={16} />
+          <span>Open in Viewer</span>
+        </button>
+      </header>
 
-        <div className="table-wrapper">
-          <table className="patient-table">
-            <thead>
-              <tr>
-                <th>우선순위</th>
-                <th>환자명</th>
-                <th>나이/성별</th>
-                <th>AI 위험도</th>
-                <th>AI 진단</th>
-                <th>상태</th>
-                <th>등록시간</th>
-              </tr>
-            </thead>
-            <tbody>
-              {samplePatients.map((patient) => (
-                <tr
-                  key={patient.id}
-                  className={selectedPatient?.id === patient.id ? "selected" : ""}
-                  onClick={() => handlePatientClick(patient)}
-                >
-                  <td>
-                    <span className={`priority-badge ${patient.priority}`}>
-                      {priorityLabels[patient.priority]}
+      {/* 메인 콘텐츠 영역 */}
+      <div className="followup-content">
+        {/* 좌측: 타임라인 */}
+        <aside className="timeline-panel">
+          <div className="panel-header">
+            <Calendar size={16} />
+            <span>X-ray Timeline</span>
+          </div>
+          <div className="timeline-list">
+            {xrayHistory.map((record, index) => (
+              <div
+                key={record.id}
+                className={`timeline-item ${selectedCurrent?.id === record.id ? "current" : ""} ${selectedPast?.id === record.id ? "past" : ""}`}
+                onClick={() => {
+                  if (selectedCurrent?.id !== record.id) {
+                    setSelectedPast(selectedCurrent);
+                    setSelectedCurrent(record);
+                  }
+                }}
+              >
+                <div className="timeline-marker" style={{ borderColor: getStatusColor(record.status) }}>
+                  <div className="marker-dot" style={{ background: getStatusColor(record.status) }} />
+                </div>
+                <div className="timeline-content">
+                  <div className="timeline-date">
+                    <span className="date">{record.date}</span>
+                    <span className="time">{record.time}</span>
+                  </div>
+                  <div className="timeline-score">
+                    <span className="score-value" style={{ color: getStatusColor(record.status) }}>
+                      {record.lesionScore}%
                     </span>
-                  </td>
-                  <td className="patient-name">{patient.name}</td>
-                  <td>{patient.age}세 / {patient.gender}</td>
-                  <td>
-                    <div className="score-cell">
-                      <div className="score-bar-mini">
-                        <div
-                          className={`score-fill-mini ${getPriorityClass(patient.score)}`}
-                          style={{ width: `${patient.score}%` }}
-                        />
-                      </div>
-                      <span className="score-text">{patient.score}%</span>
-                    </div>
-                  </td>
-                  <td className="diagnosis-cell">{patient.diagnosis}</td>
-                  <td>
-                    <span className={`status-badge ${patient.status}`}>
-                      <span className="status-dot" />
-                      {statusLabels[patient.status]}
-                    </span>
-                  </td>
-                  <td className="time-cell">{patient.time}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* 환자 상세 섹션 */}
-      <section className="patient-detail-section">
-        {selectedPatient ? (
-          <div className="detail-compact">
-            {/* X-ray 이미지 */}
-            <div className="xray-compact">
-              <span className="xray-label">Chest X-ray</span>
-              <div className="xray-viewer-compact">
-                <div className="xray-placeholder-compact">
-                  <div className="xray-icon-compact">🩻</div>
-                  <p>X-ray 이미지</p>
+                  </div>
                 </div>
+                {index < xrayHistory.length - 1 && <div className="timeline-line" />}
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        {/* 중앙: 비교 뷰어 */}
+        <section className="comparison-panel">
+          <div className="comparison-header">
+            <span className="comparison-title">Side-by-Side Comparison</span>
+            <div className="comparison-controls">
+              <button
+                className={`control-btn ${showHeatmap ? "active" : ""}`}
+                onClick={() => setShowHeatmap(!showHeatmap)}
+              >
+                <Layers size={14} />
+                <span>Heatmap</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="comparison-viewers">
+            {/* 과거 영상 (왼쪽) */}
+            <div className="viewer-card past">
+              <div className="viewer-label">
+                <span className="label-badge past">Previous</span>
+                <span className="label-date">{selectedPast?.date}</span>
+              </div>
+              <div className="viewer-image">
+                <div className="xray-placeholder">
+                  <Activity size={48} strokeWidth={1} />
+                  <span>X-ray Image</span>
+                  {showHeatmap && <div className="heatmap-overlay" />}
+                </div>
+              </div>
+              <div className="viewer-footer">
+                <span className="diagnosis">{selectedPast?.diagnosis}</span>
+                <span className="score" style={{ color: getStatusColor(selectedPast?.status) }}>
+                  {selectedPast?.lesionScore}%
+                </span>
               </div>
             </div>
 
-            {/* 환자 정보 */}
-            <div className="info-compact">
-              <h3>
-                {selectedPatient.name}
-                <span className="patient-id-badge">{selectedPatient.id}</span>
-              </h3>
-              <div className="info-grid">
-                <div className="info-row">
-                  <span className="info-label">나이</span>
-                  <span className="info-value">{selectedPatient.age}세</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">성별</span>
-                  <span className="info-value">{selectedPatient.gender}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">혈압</span>
-                  <span className="info-value">{selectedPatient.bloodPressure}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">맥박</span>
-                  <span className="info-value">{selectedPatient.heartRate} bpm</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">체온</span>
-                  <span className="info-value">{selectedPatient.temperature}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">산소포화도</span>
-                  <span className="info-value">{selectedPatient.oxygenSat}</span>
-                </div>
-                <div className="info-row full-width">
-                  <span className="info-label">주호소</span>
-                  <span className="info-value">{selectedPatient.chiefComplaint}</span>
-                </div>
+            {/* VS 구분선 */}
+            <div className="comparison-divider">
+              <div className="divider-circle">
+                {scoreChange > 0 ? (
+                  <TrendingUp size={16} color="#E85468" />
+                ) : scoreChange < 0 ? (
+                  <TrendingDown size={16} color="#52C39A" />
+                ) : (
+                  <Minus size={16} color="#8D9198" />
+                )}
               </div>
+              <span className="change-value" style={{
+                color: scoreChange > 0 ? "#E85468" : scoreChange < 0 ? "#52C39A" : "#8D9198"
+              }}>
+                {scoreChange > 0 ? `+${scoreChange}` : scoreChange}%
+              </span>
             </div>
 
-            {/* AI 분석 결과 */}
-            <div className="analysis-compact">
-              <span className="analysis-label">AI Analysis</span>
-              <div className={`score-circle-compact ${getPriorityClass(selectedPatient.score)}`}>
-                <span className="score-big">{selectedPatient.score}</span>
-                <span className="score-unit">%</span>
+            {/* 현재 영상 (오른쪽) */}
+            <div className="viewer-card current">
+              <div className="viewer-label">
+                <span className="label-badge current">Current</span>
+                <span className="label-date">{selectedCurrent?.date}</span>
               </div>
-              <p className="diagnosis-text">{selectedPatient.diagnosis}</p>
-              <div className="confidence-bar">
-                <div
-                  className="confidence-fill"
-                  style={{ width: `${selectedPatient.score}%` }}
-                />
+              <div className="viewer-image">
+                <div className="xray-placeholder">
+                  <Activity size={48} strokeWidth={1} />
+                  <span>X-ray Image</span>
+                  {showHeatmap && <div className="heatmap-overlay" />}
+                </div>
               </div>
-              <span className="confidence-text">AI 신뢰도: {Math.min(95, selectedPatient.score + 5)}%</span>
+              <div className="viewer-footer">
+                <span className="diagnosis">{selectedCurrent?.diagnosis}</span>
+                <span className="score" style={{ color: getStatusColor(selectedCurrent?.status) }}>
+                  {selectedCurrent?.lesionScore}%
+                </span>
+              </div>
             </div>
+          </div>
+        </section>
 
-            {/* 권장 조치 */}
-            <div className="actions-compact">
-              <h4>권장 조치</h4>
-              <ul>
-                {selectedPatient.recommendations.map((rec, index) => (
-                  <li key={index}>
-                    <span className="action-icon">→</span>
-                    {rec}
-                  </li>
+        {/* 우측: AI 분석 & 리포트 */}
+        <aside className="analysis-panel">
+          {/* Lesion Score 변화 그래프 */}
+          <div className="chart-section">
+            <div className="panel-header">
+              <TrendingUp size={16} />
+              <span>Score Trend</span>
+            </div>
+            <div className="score-chart">
+              <div className="chart-area">
+                {xrayHistory.slice().reverse().map((record, index) => (
+                  <div key={record.id} className="chart-bar-wrapper">
+                    <div
+                      className="chart-bar"
+                      style={{
+                        height: `${record.lesionScore}%`,
+                        background: getStatusColor(record.status)
+                      }}
+                    />
+                    <span className="chart-label">{record.date.slice(5)}</span>
+                  </div>
                 ))}
-              </ul>
-              <button className="action-button">상세 분석 보기</button>
+              </div>
             </div>
           </div>
-        ) : (
-          <div className="empty-compact">
-            <div className="empty-icon">👆</div>
-            <p>환자를 선택하면 상세 정보가 표시됩니다</p>
-            <span className="empty-hint">위 테이블에서 환자를 클릭하세요</span>
+
+          {/* Report History */}
+          <div className="report-section">
+            <div className="panel-header">
+              <FileText size={16} />
+              <span>Report History</span>
+            </div>
+            <div className="report-list">
+              {reportHistory.map((report, index) => (
+                <div key={index} className="report-item">
+                  <div className="report-icon">
+                    {index === 0 ? (
+                      <AlertCircle size={14} color="#E85468" />
+                    ) : (
+                      <CheckCircle size={14} color="#8D9198" />
+                    )}
+                  </div>
+                  <div className="report-content">
+                    <span className="report-action">{report.action}</span>
+                    <span className="report-detail">{report.detail}</span>
+                  </div>
+                  <span className="report-date">{report.date.slice(5)}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-      </section>
+        </aside>
+      </div>
     </main>
   );
 }
