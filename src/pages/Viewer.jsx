@@ -1,5 +1,5 @@
 // src/pages/Viewer.jsx
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   ZoomIn,
   ZoomOut,
@@ -13,9 +13,18 @@ import {
   Check,
   Sun,
   Contrast,
-  Maximize2
+  Maximize2,
+  RotateCcw,
+  User,
+  Calendar,
+  Activity,
+  Scan
 } from "lucide-react";
 import "./Viewer.css";
+
+// X-ray 이미지 임포트 (경로는 필요에 따라 수정하세요)
+import xrayImage from "../assets/HQ_Original_Image_Pneumonia_191.jpg";
+import heatmapImage from "../assets/HQ_Fusion_Result_Pneumonia_191.jpg";
 
 function Viewer() {
   // 히트맵 컨트롤 상태
@@ -45,6 +54,13 @@ function Viewer() {
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [displayMode, setDisplayMode] = useState("heatmap");
+  const [rotation, setRotation] = useState(0);
+
+  // 드래그 (Pan) 상태
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const imageContainerRef = useRef(null);
 
   const toggleLesionFilter = (filter) => {
     setLesionFilters(prev => ({
@@ -60,6 +76,50 @@ function Viewer() {
     }));
   };
 
+  // 회전 기능
+  const handleRotate = () => {
+    setRotation(prev => (prev + 90) % 360);
+  };
+
+  // 초기화 기능
+  const handleReset = () => {
+    setZoom(100);
+    setBrightness(100);
+    setContrast(100);
+    setRotation(0);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  // ===== 드래그 (Pan) 기능 =====
+  // 마우스 다운 시 드래그 시작
+  const handleMouseDown = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(true);
+    dragStart.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    };
+  }, [position]);
+
+  // 마우스 이동 시 이미지 위치 업데이트
+  const handleMouseMove = useCallback((e) => {
+    if (!isDragging) return;
+    
+    const newX = e.clientX - dragStart.current.x;
+    const newY = e.clientY - dragStart.current.y;
+    
+    setPosition({ x: newX, y: newY });
+  }, [isDragging]);
+
+  // 마우스 업 또는 영역 벗어날 시 드래그 종료
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   return (
     <main className="viewer-page">
       {/* 좌측: 메인 X-ray 뷰어 */}
@@ -67,10 +127,18 @@ function Viewer() {
         {/* 뷰어 툴바 */}
         <div className="viewer-toolbar">
           <div className="toolbar-group">
-            <button className="toolbar-btn" title="Zoom In" onClick={() => setZoom(prev => Math.min(prev + 10, 200))}>
+            <button 
+              className="toolbar-btn" 
+              title="Zoom In" 
+              onClick={() => setZoom(prev => Math.min(prev + 10, 200))}
+            >
               <ZoomIn size={18} />
             </button>
-            <button className="toolbar-btn" title="Zoom Out" onClick={() => setZoom(prev => Math.max(prev - 10, 50))}>
+            <button 
+              className="toolbar-btn" 
+              title="Zoom Out" 
+              onClick={() => setZoom(prev => Math.max(prev - 10, 50))}
+            >
               <ZoomOut size={18} />
             </button>
             <span className="toolbar-value">{zoom}%</span>
@@ -79,11 +147,14 @@ function Viewer() {
           <div className="toolbar-divider" />
 
           <div className="toolbar-group">
-            <button className="toolbar-btn" title="Pan">
+            <button className="toolbar-btn" title="Pan (Drag to move)">
               <Move size={18} />
             </button>
-            <button className="toolbar-btn" title="Rotate">
+            <button className="toolbar-btn" title="Rotate" onClick={handleRotate}>
               <RotateCw size={18} />
+            </button>
+            <button className="toolbar-btn" title="Reset" onClick={handleReset}>
+              <RotateCcw size={18} />
             </button>
             <button className="toolbar-btn" title="Fullscreen">
               <Maximize2 size={18} />
@@ -133,83 +204,86 @@ function Viewer() {
               className={`toolbar-btn mode-btn ${displayMode === 'heatmap' ? 'active' : ''}`}
               onClick={() => setDisplayMode('heatmap')}
             >
+              <Layers size={14} />
               Heatmap
-            </button>
-            <button
-              className={`toolbar-btn mode-btn ${displayMode === 'overlay' ? 'active' : ''}`}
-              onClick={() => setDisplayMode('overlay')}
-            >
-              Multi-overlay
             </button>
           </div>
         </div>
 
-        {/* X-ray 이미지 영역 */}
-        <div className="viewer-canvas">
-          <div
-            className="xray-display"
+        {/* X-ray 디스플레이 영역 (드래그 가능) */}
+        <div 
+          className={`viewer-canvas ${isDragging ? 'is-dragging' : ''}`}
+          ref={imageContainerRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div 
+            className="xray-image-wrapper"
             style={{
-              transform: `scale(${zoom / 100})`,
+              transform: `translate(${position.x}px, ${position.y}px) scale(${zoom / 100}) rotate(${rotation}deg)`,
               filter: `brightness(${brightness}%) contrast(${contrast}%)`
             }}
           >
-            <div className="xray-placeholder">
-              <Layers size={64} strokeWidth={1} />
-              <p>X-ray Image</p>
-              <span>Drop image or select from Triage Board</span>
+            {/* X-ray 이미지 */}
+            <div className="xray-image">
+              <img src={xrayImage} alt="Chest X-ray" className="xray-img" />
             </div>
 
-            {/* 히트맵 오버레이 (시뮬레이션) */}
-            {showHeatmap && displayMode !== 'original' && (
-              <div
+            {/* AI 히트맵 오버레이 */}
+            {displayMode === 'heatmap' && showHeatmap && (
+              <div 
                 className="heatmap-overlay"
                 style={{ opacity: heatmapOpacity / 100 }}
               >
-                <div className="heatmap-spot spot-1" />
-                <div className="heatmap-spot spot-2" />
+                <img src={heatmapImage} alt="AI Heatmap" className="heatmap-img" />
               </div>
             )}
           </div>
+
+          {/* 드래그 힌트 */}
+          <div className="drag-hint">
+            <Move size={14} />
+            <span>Drag to pan</span>
+          </div>
         </div>
 
-        {/* 메타 정보 바 */}
+        {/* 하단 메타 정보 - 한 줄 스타일 */}
         <div className="viewer-meta">
           <div className="meta-item">
-            <span className="meta-label">Patient ID</span>
-            <span className="meta-value">P-2024-001</span>
+            <User size={14} />
+            <span className="meta-value">P-2024-0847</span>
+            <span className="meta-divider">|</span>
+            <span className="meta-sub">김영수 (M/67)</span>
           </div>
           <div className="meta-item">
-            <span className="meta-label">Study Date</span>
-            <span className="meta-value">2024-11-29 09:15</span>
+            <Calendar size={14} />
+            <span className="meta-value">2024-11-20</span>
+            <span className="meta-sub">14:45</span>
           </div>
           <div className="meta-item">
-            <span className="meta-label">Modality</span>
-            <span className="meta-value">CR</span>
+            <Scan size={14} />
+            <span className="meta-value">Chest PA</span>
           </div>
-          <div className="meta-item">
-            <span className="meta-label">View</span>
-            <span className="meta-value">PA</span>
-          </div>
-          <div className="meta-item">
-            <span className="meta-label">Image Size</span>
-            <span className="meta-value">2048 x 2048</span>
+          <div className="meta-item highlight">
+            <Activity size={14} />
+            <span className="meta-label">AI Confidence</span>
+            <span className="meta-value confidence">87%</span>
           </div>
         </div>
       </section>
 
-      {/* 우측: AI Assist Sidebar */}
+      {/* 우측: AI Assist 사이드바 */}
       <aside className="viewer-sidebar">
-        {/* 1) Heatmap Controls */}
+        {/* Heatmap Controls 섹션 */}
         <div className="sidebar-section">
           <div className="section-header">
-            <div className="section-title">
-              <Layers size={18} />
-              <span>Heatmap Controls</span>
-            </div>
+            <Layers size={16} />
+            <span>Heatmap Controls</span>
           </div>
-
           <div className="section-content">
-            {/* Show Heatmap Toggle */}
+            {/* 히트맵 ON/OFF */}
             <div className="control-row">
               <span className="control-label">Show Heatmap</span>
               <button
@@ -217,30 +291,29 @@ function Viewer() {
                 onClick={() => setShowHeatmap(!showHeatmap)}
               >
                 {showHeatmap ? <Eye size={16} /> : <EyeOff size={16} />}
-                <span>{showHeatmap ? 'ON' : 'OFF'}</span>
+                {showHeatmap ? 'ON' : 'OFF'}
               </button>
             </div>
 
-            {/* Opacity Slider */}
+            {/* 투명도 슬라이더 */}
             <div className="control-row column">
-              <div className="control-row-header">
-                <span className="control-label">Opacity</span>
-                <span className="control-value">{heatmapOpacity}%</span>
+              <span className="control-label">Opacity</span>
+              <div className="slider-row">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={heatmapOpacity}
+                  onChange={(e) => setHeatmapOpacity(e.target.value)}
+                  className="control-slider"
+                />
+                <span className="slider-value">{heatmapOpacity}%</span>
               </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={heatmapOpacity}
-                onChange={(e) => setHeatmapOpacity(Number(e.target.value))}
-                className="slider"
-                disabled={!showHeatmap}
-              />
             </div>
 
-            {/* Lesion Type Filters */}
+            {/* 병변 필터 체크박스 */}
             <div className="control-row column">
-              <span className="control-label">Lesion Type Filters</span>
+              <span className="control-label">Lesion Filters</span>
               <div className="checkbox-group">
                 {Object.entries(lesionFilters).map(([key, value]) => (
                   <label key={key} className="checkbox-item">
@@ -248,7 +321,6 @@ function Viewer() {
                       type="checkbox"
                       checked={value}
                       onChange={() => toggleLesionFilter(key)}
-                      disabled={!showHeatmap}
                     />
                     <span className="checkbox-custom">
                       {value && <Check size={12} />}
@@ -263,38 +335,32 @@ function Viewer() {
           </div>
         </div>
 
-        {/* 2) Feedback on AI */}
+        {/* Feedback on AI 섹션 */}
         <div className="sidebar-section">
           <div className="section-header">
-            <div className="section-title">
-              <MessageSquare size={18} />
-              <span>Feedback on AI</span>
-            </div>
+            <MessageSquare size={16} />
+            <span>Feedback on AI</span>
           </div>
-
           <div className="section-content">
-            {/* Helpfulness Slider */}
+            {/* Helpfulness Rating */}
             <div className="control-row column">
-              <div className="control-row-header">
-                <span className="control-label">Helpfulness</span>
-                <span className="control-value">{helpfulness}/5</span>
-              </div>
-              <div className="rating-slider">
-                {[1, 2, 3, 4, 5].map((level) => (
+              <span className="control-label">Was this helpful?</span>
+              <div className="rating-row">
+                {[1, 2, 3, 4, 5].map((num) => (
                   <button
-                    key={level}
-                    className={`rating-btn ${helpfulness >= level ? 'active' : ''}`}
-                    onClick={() => setHelpfulness(level)}
+                    key={num}
+                    className={`rating-btn ${helpfulness >= num ? 'active' : ''}`}
+                    onClick={() => setHelpfulness(num)}
                   >
-                    {level}
+                    {num}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Feedback Checkboxes */}
+            {/* Issue Checkboxes */}
             <div className="control-row column">
-              <span className="control-label">Issues</span>
+              <span className="control-label">Issues (Optional)</span>
               <div className="checkbox-group">
                 <label className="checkbox-item">
                   <input
@@ -372,13 +438,6 @@ function Viewer() {
           </div>
         </div>
 
-        {/* 하단 주의 문구 */}
-        <div className="sidebar-disclaimer">
-          <AlertTriangle size={16} />
-          <p>
-            REM XTA is a demo and assistive-only AI. It must not be used for clinical diagnosis.
-          </p>
-        </div>
       </aside>
     </main>
   );

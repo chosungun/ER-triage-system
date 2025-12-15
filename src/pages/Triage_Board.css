@@ -1,27 +1,23 @@
 /* src/pages/Triage_Board.css */
-/* REM Brand: Flat Clinical UI + Blue Monochrome System */
-/* 상단 헤더(56px) 제외, 스크롤 없는 2:1 레이아웃 */
+/* REM Brand: Flat Clinical UI + KTAS 5-Level System */
 
 .triage-board {
-  width: 100%;
-  height: calc(100vh - 56px);
-  background: #F5F7FA;
-  padding: 16px;
   display: grid;
   grid-template-rows: 2fr 1fr;
+  height: calc(100vh - 56px);
+  padding: 16px;
   gap: 16px;
+  background: #F5F7FA;
   overflow: hidden;
-  box-sizing: border-box;
-  font-family: "Pretendard", system-ui, -apple-system, sans-serif;
 }
 
-/* ===== 상단: 환자 테이블 섹션 (2/3) ===== */
+/* ===== 상단: Patients Section ===== */
 .patients-section {
+  display: flex;
+  flex-direction: column;
   background: #FFFFFF;
   border-radius: 12px;
   border: 1px solid #E0E3E8;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -49,37 +45,58 @@
 
 .stats-badges {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
 }
 
 .stat-badge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  border-radius: 16px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
 }
 
 .stat-badge.total {
-  background: #F5F7FA;
+  background: #F0F2F5;
   color: #585C63;
 }
 
-.stat-badge.critical {
-  background: #FCE5E9;
-  color: #E85468;
+.stat-badge.ktas-1 {
+  background: #FEE2E2;
+  color: #DC2626;
+  min-width: 24px;
+  justify-content: center;
 }
 
-.stat-badge.warning {
-  background: #FFF6DE;
-  color: #F7B84B;
+.stat-badge.ktas-2 {
+  background: #FFEDD5;
+  color: #EA580C;
+  min-width: 24px;
+  justify-content: center;
 }
 
-.stat-badge.normal {
-  background: #E6F5EF;
-  color: #52C39A;
+.stat-badge.ktas-3 {
+  background: #FEF9C3;
+  color: #CA8A04;
+  min-width: 24px;
+  justify-content: center;
+}
+
+.stat-badge.ktas-4 {
+  background: #DCFCE7;
+  color: #16A34A;
+  min-width: 24px;
+  justify-content: center;
+}
+
+.stat-badge.ktas-5 {
+  background: #DBEAFE;
+  color: #2563EB;
+  min-width: 24px;
+  justify-content: center;
 }
 
 .header-right {
@@ -98,12 +115,11 @@
   border: 1px solid #E0E3E8;
   border-radius: 8px;
   width: 220px;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .search-box:focus-within {
   border-color: #3D6BFF;
-  background: #FFFFFF;
 }
 
 .search-box svg {
@@ -206,16 +222,25 @@
   background: #EAEFFF;
 }
 
-.patients-table tbody tr.critical.selected {
-  border-left: 3px solid #E85468;
+/* KTAS별 선택 시 좌측 보더 색상 */
+.patients-table tbody tr.ktas-1.selected {
+  border-left: 3px solid #DC2626;
 }
 
-.patients-table tbody tr.warning.selected {
-  border-left: 3px solid #F7B84B;
+.patients-table tbody tr.ktas-2.selected {
+  border-left: 3px solid #EA580C;
 }
 
-.patients-table tbody tr.normal.selected {
-  border-left: 3px solid #52C39A;
+.patients-table tbody tr.ktas-3.selected {
+  border-left: 3px solid #CA8A04;
+}
+
+.patients-table tbody tr.ktas-4.selected {
+  border-left: 3px solid #16A34A;
+}
+
+.patients-table tbody tr.ktas-5.selected {
+  border-left: 3px solid #2563EB;
 }
 
 .patients-table td {
@@ -224,8 +249,8 @@
   vertical-align: middle;
 }
 
-/* Status Badge */
-.status-badge {
+/* KTAS Badge */
+.ktas-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -233,28 +258,22 @@
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
 }
 
-.status-badge.critical {
-  background: #FCE5E9;
-  color: #E85468;
+.ktas-badge .ktas-level {
+  font-weight: 700;
+  font-size: 13px;
 }
 
-.status-badge.warning {
-  background: #FFF6DE;
-  color: #F7B84B;
+.ktas-badge .ktas-label {
+  font-weight: 500;
 }
 
-.status-badge.normal {
-  background: #E6F5EF;
-  color: #52C39A;
-}
-
+/* Patient 정보 셀 */
 .patient-id {
-  font-family: monospace;
+  font-family: "SF Mono", "Monaco", monospace;
   font-size: 12px;
-  color: #8D9198;
+  color: #585C63;
 }
 
 .patient-name {
@@ -273,55 +292,21 @@
   color: #8D9198;
 }
 
-/* Score Cell */
-.score-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.score-bar {
-  width: 80px;
-  height: 6px;
-  background: #E0E3E8;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.score-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.score-fill.critical {
-  background: #E85468;
-}
-
-.score-fill.warning {
-  background: #F7B84B;
-}
-
-.score-fill.normal {
-  background: #52C39A;
-}
-
-.score-value {
-  font-weight: 600;
-  font-size: 12px;
-  color: #1B1C1F;
-  min-width: 36px;
-}
-
 .diagnosis-cell {
-  color: #585C63;
+  font-weight: 500;
+  color: #1B1C1F;
+}
+
+/* Chief Complaint 셀 - 말줄임 처리 */
+.complaint-cell {
   max-width: 150px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #585C63;
 }
 
-/* ===== 하단: 환자 상세 섹션 (1/3) ===== */
+/* ===== 하단: Detail Section ===== */
 .detail-section {
   background: #FFFFFF;
   border-radius: 12px;
@@ -331,11 +316,11 @@
 
 .detail-content {
   display: grid;
-  grid-template-columns: 180px 1fr 240px auto;
-  gap: 20px;
+  grid-template-columns: 180px 1fr auto;
+  gap: 24px;
   padding: 20px;
   height: 100%;
-  align-items: stretch;
+  align-items: start;
 }
 
 /* X-ray Preview */
@@ -349,27 +334,27 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: #8D9198;
+  color: #585C63;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .xray-image {
-  flex: 1;
-  background: linear-gradient(135deg, #2A2C30 0%, #1B1C1F 100%);
+  width: 100%;
+  aspect-ratio: 1;
+  background: #1B1C1F;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
+  overflow: hidden;
 }
 
 .xray-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   color: #585C63;
 }
@@ -380,34 +365,33 @@
 
 .xray-placeholder span {
   font-size: 11px;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .xray-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   font-size: 11px;
   color: #8D9198;
 }
 
-.xray-meta span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.xray-meta svg {
+  flex-shrink: 0;
 }
 
 /* Patient Info */
 .patient-info {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .info-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .info-header h3 {
@@ -418,198 +402,113 @@
 }
 
 .patient-id-tag {
-  font-size: 11px;
-  font-family: monospace;
-  color: #8D9198;
-  background: #F5F7FA;
-  padding: 2px 8px;
+  font-size: 12px;
+  font-family: "SF Mono", "Monaco", monospace;
+  color: #585C63;
+  background: #F0F2F5;
+  padding: 4px 8px;
   border-radius: 4px;
+}
+
+.ktas-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 }
 
 .info-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  background: #F5F7FA;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-.info-item.full {
-  grid-column: 1 / -1;
-}
-
-.info-item svg {
-  color: #3D6BFF;
-  flex-shrink: 0;
-}
-
-.info-label {
-  color: #8D9198;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.info-value {
-  color: #1B1C1F;
-  font-weight: 600;
-  margin-left: auto;
-}
-
-/* AI Summary */
-.ai-summary {
-  display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: 4px;
+  padding: 12px;
   background: #F5F7FA;
   border-radius: 8px;
 }
 
-.ai-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.info-item svg {
+  color: #3D6BFF;
+  margin-bottom: 4px;
 }
 
-.ai-label {
+.info-label {
   font-size: 11px;
-  font-weight: 600;
   color: #8D9198;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 
-.ai-confidence {
-  font-size: 11px;
+.info-value {
+  font-size: 13px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #1B1C1F;
 }
 
-.ai-confidence.critical {
-  background: #FCE5E9;
-  color: #E85468;
+/* 6대 바이탈 사인 */
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
 }
 
-.ai-confidence.warning {
-  background: #FFF6DE;
-  color: #F7B84B;
-}
-
-.ai-confidence.normal {
-  background: #E6F5EF;
-  color: #52C39A;
-}
-
-.ai-score-display {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.score-circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+.vital-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 4px;
+  padding: 10px 12px;
+  background: #F5F7FA;
+  border-radius: 8px;
+  text-align: center;
 }
 
-.score-circle.critical {
-  background: linear-gradient(135deg, #FCE5E9 0%, #F3A8B2 100%);
-  border: 2px solid #E85468;
-}
-
-.score-circle.warning {
-  background: linear-gradient(135deg, #FFF6DE 0%, #FFDFA0 100%);
-  border: 2px solid #F7B84B;
-}
-
-.score-circle.normal {
-  background: linear-gradient(135deg, #E6F5EF 0%, #A9E4CE 100%);
-  border: 2px solid #52C39A;
-}
-
-.score-number {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1B1C1F;
-  line-height: 1;
-}
-
-.score-unit {
+.vital-label {
   font-size: 10px;
+  color: #8D9198;
+  text-transform: uppercase;
   font-weight: 600;
-  color: #585C63;
 }
 
-.diagnosis-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.diagnosis-main {
-  font-size: 14px;
+.vital-value {
+  font-size: 13px;
   font-weight: 700;
   color: #1B1C1F;
 }
 
-.diagnosis-sub {
-  font-size: 12px;
-  color: #585C63;
-}
-
+/* AI Findings */
 .ai-findings {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  padding: 12px;
+  background: #F5F7FA;
+  border-radius: 8px;
 }
 
 .findings-label {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
   color: #8D9198;
   text-transform: uppercase;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
 }
 
 .ai-findings ul {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  padding-left: 16px;
 }
 
 .ai-findings li {
-  font-size: 11px;
+  font-size: 13px;
   color: #3C3E44;
-  padding-left: 12px;
-  position: relative;
+  margin-bottom: 4px;
 }
 
-.ai-findings li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 4px;
-  background: #3D6BFF;
-  border-radius: 50%;
+.ai-findings li:last-child {
+  margin-bottom: 0;
 }
 
 /* Action Buttons */
@@ -617,17 +516,16 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  justify-content: center;
+  align-self: center;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -640,17 +538,18 @@
 }
 
 .action-btn.primary:hover {
-  background: #2E53E5;
+  background: #2952CC;
 }
 
 .action-btn.secondary {
-  background: #FFFFFF;
-  color: #3D6BFF;
+  background: #F5F7FA;
+  color: #585C63;
   border: 1px solid #E0E3E8;
 }
 
 .action-btn.secondary:hover {
   background: #EAEFFF;
+  color: #3D6BFF;
   border-color: #3D6BFF;
 }
 
@@ -704,12 +603,16 @@
 /* ===== 반응형 ===== */
 @media (max-width: 1400px) {
   .detail-content {
-    grid-template-columns: 160px 1fr 200px auto;
+    grid-template-columns: 160px 1fr auto;
     gap: 16px;
   }
   
   .info-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .vitals-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -723,7 +626,7 @@
   }
   
   .detail-content {
-    grid-template-columns: 140px 1fr 180px auto;
+    grid-template-columns: 140px 1fr auto;
     gap: 12px;
     padding: 16px;
   }
@@ -758,6 +661,10 @@
     flex-direction: row;
     grid-column: 1 / -1;
   }
+  
+  .vitals-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -783,5 +690,9 @@
   
   .xray-preview {
     display: none;
+  }
+  
+  .vitals-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

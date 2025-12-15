@@ -2,13 +2,13 @@
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { 
-  LayoutGrid, 
-  ClipboardList, 
   HelpCircle,
   Globe,
   Settings,
   User,
-  ChevronDown
+  ChevronDown,
+  ArrowLeft,
+  LayoutDashboard
 } from "lucide-react";
 import "./Navbar.css";
 
@@ -18,54 +18,51 @@ import remLogo from "../../assets/rem_logo.png";
 function Navbar() {
   const [language, setLanguage] = useState("KO");
   const location = useLocation();
+  
+  // 대시보드(/) 페이지인지 확인
+  const isDashboard = location.pathname === "/";
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === "KO" ? "EN" : "KO");
   };
 
-  const navItems = [
-    { path: "/", label: "Triage Board" },
-    { path: "/followup", label: "Follow-up" },
-    { path: "/viewer", label: "Viewer" },
-    { path: "/tour", label: "Product Tour" },
-  ];
-
   return (
     <header className="navbar">
-      {/* 왼쪽: 로고 + 서브텍스트 */}
+      {/* 왼쪽: 아이콘 + 로고 + 서브텍스트 */}
       <div className="navbar__left">
-        <NavLink to="/" className="navbar__brand">
+        {isDashboard ? (
+          <div className="navbar__home-btn">
+            <LayoutDashboard size={18} />
+          </div>
+        ) : (
+          <NavLink to="/" className="navbar__back-btn" title="Back to Dashboard">
+            <ArrowLeft size={18} />
+          </NavLink>
+        )}
+        
+        <div className="navbar__brand">
           <img src={remLogo} alt="REM Logo" className="navbar__logo-image" />
           <div className="navbar__brand-info">
             <span className="navbar__brand-name">REM</span>
             <span className="navbar__brand-sub">X-ray Triage Assist</span>
           </div>
-        </NavLink>
+        </div>
       </div>
 
-      {/* 가운데: 네비게이션 메뉴 */}
-      <nav className="navbar__center">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={`navbar__nav-item ${isActive ? "active" : ""}`}
-            >
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      {/* 오른쪽: 언어 | 설정 | 프로필 */}
+      {/* 오른쪽: 언어 | 도움말 | 설정 | 프로필 */}
       <div className="navbar__right">
         {/* 언어 토글 */}
         <button className="navbar__lang-btn" onClick={toggleLanguage}>
           <Globe size={16} />
           <span>{language}</span>
         </button>
+
+        <div className="navbar__divider" />
+
+        {/* Product Tour 도움말 버튼 */}
+        <NavLink to="/tour" className="navbar__icon-btn" title="Product Tour">
+          <HelpCircle size={18} />
+        </NavLink>
 
         <div className="navbar__divider" />
 
