@@ -1,4 +1,4 @@
-/* src/pages/FollowUpPage.css */
+/* src/pages/FollowUp.css */
 /* REM Brand: Flat Clinical UI + Blue Monochrome System */
 /* Follow-up: 시계열 X-ray 비교 분석 */
 
@@ -130,7 +130,7 @@
   color: #8D9198;
   background: #F5F7FA;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .timeline-list {
@@ -143,33 +143,30 @@
   display: flex;
   gap: 10px;
   padding: 12px;
-  margin-bottom: 8px;
-  background: #FFFFFF;
-  border: 1px solid #E0E3E8;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  margin-bottom: 4px;
 }
 
 .timeline-item:hover {
   background: #F5F7FA;
-  border-color: #CED9FF;
 }
 
 .timeline-item.selected {
   background: #EAEFFF;
-  border-color: #3D6BFF;
+  border: 1px solid #CED9FF;
 }
 
-.timeline-item.selected.past {
-  border-color: #8D9198;
+.timeline-item.past.selected {
   background: #F5F7FA;
+  border: 1px solid #C3C6CC;
 }
 
-.timeline-item.selected.current {
-  border-color: #3D6BFF;
+.timeline-item.current.selected {
   background: #EAEFFF;
+  border: 1px solid #3D6BFF;
 }
 
 /* 선택 체크박스 */
@@ -177,7 +174,7 @@
   width: 20px;
   height: 20px;
   border: 2px solid #C3C6CC;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,23 +188,17 @@
   color: #FFFFFF;
 }
 
-.timeline-item.past .selection-check.checked {
-  background: #8D9198;
-  border-color: #8D9198;
-}
-
 /* 타임라인 마커 */
 .timeline-marker {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  padding-top: 4px;
 }
 
 .marker-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: #C3C6CC;
   border-radius: 50%;
 }
@@ -216,16 +207,12 @@
   background: #3D6BFF;
 }
 
-.timeline-item.past .marker-dot {
-  background: #8D9198;
-}
-
 .marker-line {
   width: 2px;
   flex: 1;
   background: #E0E3E8;
-  margin-top: 8px;
-  min-height: 20px;
+  margin-top: 4px;
+  min-height: 30px;
 }
 
 /* 타임라인 콘텐츠 */
@@ -242,7 +229,7 @@
 }
 
 .timeline-date-row .date {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #1B1C1F;
 }
@@ -255,29 +242,29 @@
 .timeline-location {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .location-badge {
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 4px;
 }
 
 .facility {
-  font-size: 12px;
+  font-size: 11px;
   color: #8D9198;
 }
 
 .selection-label {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 11px;
-  font-weight: 600;
-  color: #3D6BFF;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: #3D6BFF;
 }
 
 .timeline-item.past .selection-label {
@@ -306,8 +293,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #F5F7FA;
+  background: #FFFFFF;
   border-radius: 10px;
+  border: 1px solid #E0E3E8;
   overflow: hidden;
 }
 
@@ -337,13 +325,48 @@
 }
 
 .viewer-image {
-  flex: 1;
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #1B1C1F;
   position: relative;
-  min-height: 200px;
+  overflow: hidden;
+}
+
+/* X-ray 이미지 스타일 */
+.xray-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 확대 버튼 */
+.expand-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.viewer-image:hover .expand-btn {
+  opacity: 1;
+}
+
+.expand-btn:hover {
+  background: rgba(61, 107, 255, 0.8);
+  border-color: #3D6BFF;
 }
 
 .xray-placeholder {
@@ -383,15 +406,17 @@
   padding: 12px;
   background: #FFFFFF;
   border-top: 1px solid #E0E3E8;
+  display: flex;
+  flex-direction: column;
 }
 
 .info-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: #8D9198;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .info-row svg {
@@ -400,7 +425,7 @@
 }
 
 .info-row.primary {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #1B1C1F;
 }
@@ -410,40 +435,68 @@
 }
 
 .diagnosis-tag {
-  margin-top: 8px;
+  margin-top: 2px;
+  margin-bottom: 10px;
   display: inline-block;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #3C3E44;
   background: #F5F7FA;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 4px;
+  width: fit-content;
+}
+
+/* 리포트 섹션 */
+.report-section {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  border-top: 1px solid #E0E3E8;
+}
+
+.report-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8D9198;
+  margin-bottom: 6px;
+}
+
+.report-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #3C3E44;
+  font-family: "Georgia", serif;
 }
 
 .viewer-empty {
-  flex: 1;
+  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
   color: #8D9198;
-  padding: 40px;
+  background: #F5F7FA;
 }
 
 .empty-icon {
-  width: 64px;
-  height: 64px;
-  background: #E0E3E8;
-  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  background: #2A2C30;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8D9198;
+  color: #585C63;
 }
 
 .viewer-empty span {
   font-size: 13px;
+  text-align: center;
 }
 
 /* 비교 화살표 */
@@ -451,12 +504,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #C3C6CC;
   flex-shrink: 0;
-  width: 40px;
+  transition: all 0.2s ease;
+}
+
+.comparison-arrow.active {
   color: #3D6BFF;
 }
 
-/* ===== 우측: 시계열 분석 패널 ===== */
+/* ===== 우측: 분석 패널 ===== */
 .analysis-panel {
   background: #FFFFFF;
   border-radius: 12px;
@@ -468,16 +525,16 @@
 
 .analysis-content {
   flex: 1;
-  overflow-y: auto;
   padding: 16px;
+  overflow-y: auto;
 }
 
-/* 분석 요약 카드 */
+/* 요약 카드 */
 .analysis-summary {
   display: flex;
-  align-items: flex-start;
   gap: 12px;
-  padding: 16px;
+  padding: 14px;
+  background: #F5F7FA;
   border-radius: 10px;
   margin-bottom: 16px;
 }
@@ -497,29 +554,29 @@
 .summary-icon {
   width: 40px;
   height: 40px;
+  background: #FFFFFF;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FFFFFF;
   flex-shrink: 0;
 }
 
 .summary-text h4 {
-  font-size: 15px;
+  margin: 0 0 4px 0;
+  font-size: 14px;
   font-weight: 700;
   color: #1B1C1F;
-  margin: 0 0 4px 0;
 }
 
 .summary-text p {
-  font-size: 13px;
-  color: #3C3E44;
   margin: 0;
+  font-size: 12px;
+  color: #585C63;
   line-height: 1.5;
 }
 
-/* 상세 분석 */
+/* 상세 분석 섹션 */
 .analysis-details {
   margin-bottom: 16px;
 }
@@ -531,49 +588,50 @@
   border-radius: 8px;
 }
 
-.detail-section.new,
-.detail-section.worsening {
+.detail-section.worsened {
   background: #FFF6DE;
 }
 
-.detail-section.improving,
-.detail-section.resolved {
+.detail-section.improved {
   background: #E6F5EF;
-}
-
-.detail-section.stable {
-  background: #F5F7FA;
 }
 
 .detail-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
   font-size: 12px;
   font-weight: 600;
-  color: #3C3E44;
-  margin-bottom: 8px;
+  color: #1B1C1F;
 }
 
-.detail-section.new .detail-header,
-.detail-section.worsening .detail-header {
+.detail-section.worsened .detail-header {
   color: #E85468;
 }
 
-.detail-section.improving .detail-header,
-.detail-section.resolved .detail-header {
+.detail-section.worsened .detail-header svg {
+  color: #E85468;
+}
+
+.detail-section.improved .detail-header {
+  color: #52C39A;
+}
+
+.detail-section.improved .detail-header svg {
   color: #52C39A;
 }
 
 .detail-items {
   margin: 0;
   padding-left: 20px;
+  list-style-type: disc;
 }
 
 .detail-items li {
   font-size: 12px;
   color: #3C3E44;
-  line-height: 1.6;
+  margin-bottom: 4px;
 }
 
 /* 권고사항 */
@@ -587,22 +645,27 @@
 .recommendations-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
   font-size: 12px;
   font-weight: 600;
   color: #3D6BFF;
-  margin-bottom: 8px;
+}
+
+.recommendations-header svg {
+  color: #3D6BFF;
 }
 
 .recommendations-list {
   margin: 0;
   padding-left: 20px;
+  list-style-type: disc;
 }
 
 .recommendations-list li {
   font-size: 12px;
-  color: #2E53E5;
-  line-height: 1.6;
+  color: #3C3E44;
+  margin-bottom: 4px;
 }
 
 /* 비교 기간 */
@@ -610,7 +673,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  padding: 10px 12px;
   background: #F5F7FA;
   border-radius: 8px;
 }
@@ -623,17 +686,17 @@
 .period-value {
   font-size: 14px;
   font-weight: 700;
-  color: #1B1C1F;
+  color: #3D6BFF;
 }
 
-/* 분석 비어있을 때 */
+/* 빈 상태 */
 .analysis-empty {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px;
+  padding: 40px 20px;
   text-align: center;
 }
 
@@ -641,7 +704,7 @@
   width: 80px;
   height: 80px;
   background: #F5F7FA;
-  border-radius: 50%;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -650,17 +713,17 @@
 }
 
 .analysis-empty h4 {
+  margin: 0 0 8px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #1B1C1F;
-  margin: 0 0 8px 0;
+  color: #3C3E44;
 }
 
 .analysis-empty p {
-  font-size: 13px;
-  color: #8D9198;
   margin: 0;
-  line-height: 1.5;
+  font-size: 12px;
+  color: #8D9198;
+  line-height: 1.6;
 }
 
 /* ===== 스크롤바 스타일 ===== */
@@ -694,29 +757,36 @@
 
 @media (max-width: 1024px) {
   .followup-content {
-    grid-template-columns: 200px 1fr 240px;
-    gap: 12px;
-    padding: 12px;
+    grid-template-columns: 200px 1fr;
+  }
+  
+  .analysis-panel {
+    display: none;
   }
 }
 
 @media (max-width: 768px) {
   .followup-content {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto 1fr;
   }
   
   .timeline-panel {
-    max-height: 200px;
+    max-height: 180px;
   }
   
-  .comparison-viewers {
-    flex-direction: column;
+  .timeline-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
   }
   
-  .comparison-arrow {
-    transform: rotate(90deg);
-    width: auto;
-    height: 40px;
+  .timeline-item {
+    flex-shrink: 0;
+    width: 160px;
+  }
+  
+  .marker-line {
+    display: none;
   }
 }

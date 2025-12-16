@@ -13,9 +13,24 @@ import {
   AlertCircle,
   CheckCircle,
   Activity,
-  Layers
+  Layers,
+  Maximize2
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './FollowUp.css';
+
+// X-ray 이미지 import
+import OriginalImage352 from '../assets/HQ_Original_Image_Pneumonia_352.jpg';
+import OriginalImage531 from '../assets/HQ_Original_Image_Pneumonia_531.jpg';
+import OriginalImage1892 from '../assets/HQ_Original_Image_Pneumonia_1892.jpg';
+import OriginalImage1323 from '../assets/HQ_Original_Image_Pneumonia_1323.jpg';
+import OriginalImage1585 from '../assets/HQ_Original_Image_Pneumonia_1585.jpg';
+
+import FusionImage352 from '../assets/HQ_Fusion_Result_Pneumonia_352.jpg';
+import FusionImage531 from '../assets/HQ_Fusion_Result_Pneumonia_531.jpg';
+import FusionImage1892 from '../assets/HQ_Fusion_Result_Pneumonia_1892.jpg';
+import FusionImage1323 from '../assets/HQ_Fusion_Result_Pneumonia_1323.jpg';
+import FusionImage1585 from '../assets/HQ_Fusion_Result_Pneumonia_1585.jpg';
 
 // 샘플 환자 데이터
 const patientData = {
@@ -25,7 +40,7 @@ const patientData = {
   gender: '남',
 };
 
-// X-ray 촬영 이력 데이터 (최신순 정렬)
+// X-ray 촬영 이력 데이터 (최신순 정렬) - 각 날짜마다 다른 이미지 할당
 const xrayHistory = [
   {
     id: 'xr-001',
@@ -36,7 +51,10 @@ const xrayHistory = [
     technician: '방사선사 이지은',
     diagnosis: 'Pneumonia',
     findings: ['양측 폐야 침윤 증가', '우하엽 경화 소견', '늑막삼출 의심'],
-    severity: 'critical'
+    severity: 'critical',
+    originalImage: OriginalImage352,
+    heatmapImage: FusionImage352,
+    report: 'Bilateral infiltrates with RLL consolidation. Pleural effusion suspected. Urgent CT recommended.'
   },
   {
     id: 'xr-002',
@@ -47,7 +65,10 @@ const xrayHistory = [
     technician: '방사선사 박민수',
     diagnosis: 'Pneumonia',
     findings: ['양측 폐야 침윤', '우하엽 경화 소견'],
-    severity: 'high'
+    severity: 'high',
+    originalImage: OriginalImage531,
+    heatmapImage: FusionImage531,
+    report: 'Bilateral airspace opacities. RLL consolidation persists. F/U in 48-72hrs recommended.'
   },
   {
     id: 'xr-003',
@@ -58,7 +79,10 @@ const xrayHistory = [
     technician: '방사선사 최수진',
     diagnosis: 'Suspected Pneumonia',
     findings: ['경미한 폐침윤', '우하엽 음영 증가'],
-    severity: 'normal'
+    severity: 'normal',
+    originalImage: OriginalImage1892,
+    heatmapImage: FusionImage1892,
+    report: 'Mild RLL infiltrates. Early pneumonia cannot be excluded. Clinical correlation advised.'
   },
   {
     id: 'xr-004',
@@ -69,7 +93,10 @@ const xrayHistory = [
     technician: '방사선사 김태호',
     diagnosis: 'Normal',
     findings: ['특이 소견 없음'],
-    severity: 'low'
+    severity: 'low',
+    originalImage: OriginalImage1323,
+    heatmapImage: FusionImage1323,
+    report: 'Clear lungs bilaterally. No consolidation or effusion. Normal cardiac silhouette.'
   },
   {
     id: 'xr-005',
@@ -80,7 +107,10 @@ const xrayHistory = [
     technician: '방사선사 정유나',
     diagnosis: 'Normal',
     findings: ['정상 소견'],
-    severity: 'low'
+    severity: 'low',
+    originalImage: OriginalImage1585,
+    heatmapImage: FusionImage1585,
+    report: 'Routine screening. No active pulmonary disease. Normal chest X-ray.'
   }
 ];
 
@@ -110,62 +140,58 @@ const generateTimeSeriesAnalysis = (pastXray, currentXray) => {
     recommendations: []
   };
   
-  // 진행 상태에 따른 분석 내용
-  if (analysis.trend === 'worsening') {
-    analysis.summaryTitle = '병변 진행 감지';
-    analysis.summaryText = `${analysis.daysDiff}일 간 폐렴 소견이 악화되었습니다.`;
+  // 악화된 경우
+  if (currentLevel > pastLevel) {
+    analysis.summaryTitle = '병변 악화';
+    analysis.summaryText = `${analysis.daysDiff}일 사이 폐렴 소견이 진행되었습니다.`;
     
-    // 새로 발견된 소견 찾기
-    const newFindings = currentXray.findings.filter(
-      f => !pastXray.findings.some(pf => pf.includes(f.split(' ')[0]))
-    );
-    
+    // 새로 추가된 소견
+    const newFindings = currentXray.findings.filter(f => !pastXray.findings.includes(f));
     if (newFindings.length > 0) {
       analysis.details.push({
-        type: 'new',
+        type: 'worsened',
         icon: 'alert',
-        title: '새로운 소견',
+        title: '새로 발견된 소견',
         items: newFindings
       });
     }
     
+    // 악화된 소견
     analysis.details.push({
-      type: 'worsening',
+      type: 'worsened',
       icon: 'trending-up',
       title: '악화된 소견',
-      items: ['침윤 범위 확대', '경화 소견 진행']
+      items: ['폐 침윤 범위 확대', '음영 밀도 증가']
     });
     
     analysis.recommendations = [
-      '즉각적인 치료 조정 검토',
-      '호흡기내과 협진 고려',
-      '24시간 이내 추적 검사 권장'
+      '즉시 담당의 상담 권장',
+      '항생제 치료 검토',
+      '48시간 내 추적 검사'
     ];
     
-  } else if (analysis.trend === 'improving') {
-    analysis.summaryTitle = '병변 호전 확인';
-    analysis.summaryText = `${analysis.daysDiff}일 간 폐렴 소견이 호전되었습니다.`;
+  // 호전된 경우
+  } else if (currentLevel < pastLevel) {
+    analysis.summaryTitle = '병변 호전';
+    analysis.summaryText = `${analysis.daysDiff}일 사이 폐렴 소견이 완화되었습니다.`;
     
-    analysis.details.push({
-      type: 'improving',
-      icon: 'trending-down',
-      title: '호전된 소견',
-      items: ['침윤 범위 감소', '음영 밀도 감소']
-    });
-    
-    // 소실된 소견 찾기
-    const resolvedFindings = pastXray.findings.filter(
-      f => !currentXray.findings.some(cf => cf.includes(f.split(' ')[0]))
-    );
-    
-    if (resolvedFindings.length > 0) {
+    // 호전된 소견
+    const improvedFindings = pastXray.findings.filter(f => !currentXray.findings.includes(f));
+    if (improvedFindings.length > 0) {
       analysis.details.push({
-        type: 'resolved',
+        type: 'improved',
         icon: 'check',
-        title: '소실된 소견',
-        items: resolvedFindings
+        title: '호전된 소견',
+        items: improvedFindings
       });
     }
+    
+    analysis.details.push({
+      type: 'improved',
+      icon: 'trending-down',
+      title: '개선 관찰',
+      items: ['침윤 범위 감소', '음영 밀도 감소']
+    });
     
     analysis.recommendations = [
       '현재 치료 유지',
@@ -173,6 +199,7 @@ const generateTimeSeriesAnalysis = (pastXray, currentXray) => {
       '증상 모니터링 지속'
     ];
     
+  // 유지된 경우
   } else {
     analysis.summaryTitle = '병변 유지';
     analysis.summaryText = `${analysis.daysDiff}일 간 유의미한 변화가 없습니다.`;
@@ -194,6 +221,8 @@ const generateTimeSeriesAnalysis = (pastXray, currentXray) => {
 };
 
 function FollowUp() {
+  const navigate = useNavigate();
+  
   // 선택된 X-ray 두 개 (과거, 현재)
   const [selectedPast, setSelectedPast] = useState(null);
   const [selectedCurrent, setSelectedCurrent] = useState(null);
@@ -316,6 +345,11 @@ function FollowUp() {
     }
   };
 
+  // 뷰어 페이지로 이동
+  const handleOpenViewer = (xray) => {
+    navigate('/viewer', { state: { selectedXray: xray } });
+  };
+
   return (
     <main className="followup-page">
       {/* 상단 헤더 */}
@@ -418,11 +452,18 @@ function FollowUp() {
               {selectedPast ? (
                 <>
                   <div className="viewer-image">
-                    <div className="xray-placeholder">
-                      <Activity size={48} strokeWidth={1} />
-                      <span>Chest X-ray</span>
-                    </div>
-                    {showHeatmap && <div className="heatmap-overlay" />}
+                    <img 
+                      src={showHeatmap ? selectedPast.heatmapImage : selectedPast.originalImage}
+                      alt="Past X-ray"
+                      className="xray-image"
+                    />
+                    <button 
+                      className="expand-btn"
+                      onClick={() => handleOpenViewer(selectedPast)}
+                      title="뷰어에서 열기"
+                    >
+                      <Maximize2 size={16} />
+                    </button>
                   </div>
                   <div className="viewer-info">
                     <div className="info-row primary">
@@ -433,11 +474,11 @@ function FollowUp() {
                       <MapPin size={14} />
                       <span>{selectedPast.location} · {selectedPast.facility}</span>
                     </div>
-                    <div className="info-row">
-                      <User size={14} />
-                      <span>{selectedPast.technician}</span>
-                    </div>
                     <div className="diagnosis-tag">{selectedPast.diagnosis}</div>
+                    <div className="report-section">
+                      <div className="report-label">Radiologist Report</div>
+                      <p className="report-text">{selectedPast.report}</p>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -451,7 +492,7 @@ function FollowUp() {
             </div>
             
             {/* 화살표 */}
-            <div className="comparison-arrow">
+            <div className={`comparison-arrow ${selectedPast && selectedCurrent ? 'active' : ''}`}>
               <ArrowRight size={24} />
             </div>
             
@@ -464,11 +505,18 @@ function FollowUp() {
               {selectedCurrent ? (
                 <>
                   <div className="viewer-image">
-                    <div className="xray-placeholder">
-                      <Activity size={48} strokeWidth={1} />
-                      <span>Chest X-ray</span>
-                    </div>
-                    {showHeatmap && <div className="heatmap-overlay current" />}
+                    <img 
+                      src={showHeatmap ? selectedCurrent.heatmapImage : selectedCurrent.originalImage}
+                      alt="Current X-ray"
+                      className="xray-image"
+                    />
+                    <button 
+                      className="expand-btn"
+                      onClick={() => handleOpenViewer(selectedCurrent)}
+                      title="뷰어에서 열기"
+                    >
+                      <Maximize2 size={16} />
+                    </button>
                   </div>
                   <div className="viewer-info">
                     <div className="info-row primary">
@@ -479,11 +527,11 @@ function FollowUp() {
                       <MapPin size={14} />
                       <span>{selectedCurrent.location} · {selectedCurrent.facility}</span>
                     </div>
-                    <div className="info-row">
-                      <User size={14} />
-                      <span>{selectedCurrent.technician}</span>
-                    </div>
                     <div className="diagnosis-tag">{selectedCurrent.diagnosis}</div>
+                    <div className="report-section">
+                      <div className="report-label">Radiologist Report</div>
+                      <p className="report-text">{selectedCurrent.report}</p>
+                    </div>
                   </div>
                 </>
               ) : (

@@ -1,5 +1,6 @@
 // src/pages/Viewer.jsx
 import React, { useState, useRef, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import {
   ZoomIn,
   ZoomOut,
@@ -9,7 +10,6 @@ import {
   Eye,
   EyeOff,
   MessageSquare,
-  AlertTriangle,
   Check,
   Sun,
   Contrast,
@@ -22,11 +22,27 @@ import {
 } from "lucide-react";
 import "./Viewer.css";
 
-// X-ray 이미지 임포트 (경로는 필요에 따라 수정하세요)
-import xrayImage from "../assets/HQ_Original_Image_Pneumonia_191.jpg";
-import heatmapImage from "../assets/HQ_Fusion_Result_Pneumonia_191.jpg";
-
 function Viewer() {
+  // FollowUp에서 전달받은 X-ray 데이터
+  const location = useLocation();
+  const selectedXray = location.state?.selectedXray || null;
+
+  // 디버깅용 로그
+  console.log('Viewer received state:', location.state);
+  console.log('Selected X-ray:', selectedXray);
+
+  // 이미지 소스 - FollowUp에서 전달받은 이미지 직접 사용
+  const originalImage = selectedXray?.originalImage || null;
+  const heatmapImage = selectedXray?.heatmapImage || null;
+
+  // 환자/촬영 정보
+  const patientId = 'P-2024-0847';
+  const patientName = '김영수';
+  const patientInfo = 'M/67';
+  const shootDate = selectedXray?.date || '-';
+  const shootTime = selectedXray?.time || '-';
+  const diagnosis = selectedXray?.diagnosis || '-';
+
   // 히트맵 컨트롤 상태
   const [showHeatmap, setShowHeatmap] = useState(true);
   const [heatmapOpacity, setHeatmapOpacity] = useState(50);
@@ -91,7 +107,6 @@ function Viewer() {
   };
 
   // ===== 드래그 (Pan) 기능 =====
-  // 마우스 다운 시 드래그 시작
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -101,7 +116,6 @@ function Viewer() {
     };
   }, [position]);
 
-  // 마우스 이동 시 이미지 위치 업데이트
   const handleMouseMove = useCallback((e) => {
     if (!isDragging) return;
     
@@ -111,7 +125,6 @@ function Viewer() {
     setPosition({ x: newX, y: newY });
   }, [isDragging]);
 
-  // 마우스 업 또는 영역 벗어날 시 드래그 종료
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
@@ -219,28 +232,35 @@ function Viewer() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <div 
-            className="xray-image-wrapper"
-            style={{
-              transform: `translate(${position.x}px, ${position.y}px) scale(${zoom / 100}) rotate(${rotation}deg)`,
-              filter: `brightness(${brightness}%) contrast(${contrast}%)`
-            }}
-          >
-            {/* X-ray 이미지 */}
-            <div className="xray-image">
-              <img src={xrayImage} alt="Chest X-ray" className="xray-img" />
-            </div>
-
-            {/* AI 히트맵 오버레이 */}
-            {displayMode === 'heatmap' && showHeatmap && (
-              <div 
-                className="heatmap-overlay"
-                style={{ opacity: heatmapOpacity / 100 }}
-              >
-                <img src={heatmapImage} alt="AI Heatmap" className="heatmap-img" />
+          {originalImage ? (
+            <div 
+              className="xray-image-wrapper"
+              style={{
+                transform: `translate(${position.x}px, ${position.y}px) scale(${zoom / 100}) rotate(${rotation}deg)`,
+                filter: `brightness(${brightness}%) contrast(${contrast}%)`
+              }}
+            >
+              {/* X-ray 이미지 */}
+              <div className="xray-image">
+                <img src={originalImage} alt="Chest X-ray" className="xray-img" />
               </div>
-            )}
-          </div>
+
+              {/* AI 히트맵 오버레이 */}
+              {displayMode === 'heatmap' && showHeatmap && heatmapImage && (
+                <div 
+                  className="heatmap-overlay"
+                  style={{ opacity: heatmapOpacity / 100 }}
+                >
+                  <img src={heatmapImage} alt="AI Heatmap" className="heatmap-img" />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="viewer-placeholder">
+              <Activity size={64} strokeWidth={1} />
+              <span>Follow-up 페이지에서 X-ray를 선택해주세요</span>
+            </div>
+          )}
 
           {/* 드래그 힌트 */}
           <div className="drag-hint">
@@ -249,27 +269,27 @@ function Viewer() {
           </div>
         </div>
 
-        {/* 하단 메타 정보 - 한 줄 스타일 */}
+        {/* 하단 메타 정보 */}
         <div className="viewer-meta">
           <div className="meta-item">
             <User size={14} />
-            <span className="meta-value">P-2024-0847</span>
+            <span className="meta-value">{patientId}</span>
             <span className="meta-divider">|</span>
-            <span className="meta-sub">김영수 (M/67)</span>
+            <span className="meta-sub">{patientName} ({patientInfo})</span>
           </div>
           <div className="meta-item">
             <Calendar size={14} />
-            <span className="meta-value">2024-11-20</span>
-            <span className="meta-sub">14:45</span>
+            <span className="meta-value">{shootDate}</span>
+            <span className="meta-sub">{shootTime}</span>
           </div>
           <div className="meta-item">
             <Scan size={14} />
             <span className="meta-value">Chest PA</span>
           </div>
-          <div className="meta-item highlight">
+          <div className="meta-item diagnosis-item">
             <Activity size={14} />
-            <span className="meta-label">AI Confidence</span>
-            <span className="meta-value confidence">87%</span>
+            <span className="meta-label">Diagnosis</span>
+            <span className="meta-value diagnosis">{diagnosis}</span>
           </div>
         </div>
       </section>
@@ -360,7 +380,7 @@ function Viewer() {
 
             {/* Issue Checkboxes */}
             <div className="control-row column">
-              <span className="control-label">Issues (Optional)</span>
+              <span className="control-label">Any issues?</span>
               <div className="checkbox-group">
                 <label className="checkbox-item">
                   <input

@@ -1,6 +1,10 @@
 /* src/pages/Triage_Board.css */
-/* REM Brand: Flat Clinical UI + KTAS 5-Level System */
+/* REM XTA - Triage Board */
+/* Flat Clinical UI + KTAS 5-Level System */
 
+/* =============================================
+   메인 레이아웃
+============================================= */
 .triage-board {
   display: grid;
   grid-template-rows: 2fr 1fr;
@@ -9,9 +13,12 @@
   gap: 16px;
   background: #F5F7FA;
   overflow: hidden;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ===== 상단: Patients Section ===== */
+/* =============================================
+   상단: 환자 테이블 섹션
+============================================= */
 .patients-section {
   display: flex;
   flex-direction: column;
@@ -21,6 +28,7 @@
   overflow: hidden;
 }
 
+/* 섹션 헤더 */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -43,6 +51,7 @@
   margin: 0;
 }
 
+/* KTAS 통계 배지 */
 .stats-badges {
   display: flex;
   align-items: center;
@@ -177,7 +186,9 @@
   pointer-events: none;
 }
 
-/* 테이블 컨테이너 */
+/* =============================================
+   테이블
+============================================= */
 .table-container {
   flex: 1;
   overflow-y: auto;
@@ -211,7 +222,7 @@
 .patients-table tbody tr {
   border-bottom: 1px solid #EDF0F4;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .patients-table tbody tr:hover {
@@ -222,26 +233,12 @@
   background: #EAEFFF;
 }
 
-/* KTAS별 선택 시 좌측 보더 색상 */
-.patients-table tbody tr.ktas-1.selected {
-  border-left: 3px solid #DC2626;
-}
-
-.patients-table tbody tr.ktas-2.selected {
-  border-left: 3px solid #EA580C;
-}
-
-.patients-table tbody tr.ktas-3.selected {
-  border-left: 3px solid #CA8A04;
-}
-
-.patients-table tbody tr.ktas-4.selected {
-  border-left: 3px solid #16A34A;
-}
-
-.patients-table tbody tr.ktas-5.selected {
-  border-left: 3px solid #2563EB;
-}
+/* KTAS별 선택 시 좌측 보더 */
+.patients-table tbody tr.ktas-1.selected { border-left: 3px solid #DC2626; }
+.patients-table tbody tr.ktas-2.selected { border-left: 3px solid #EA580C; }
+.patients-table tbody tr.ktas-3.selected { border-left: 3px solid #CA8A04; }
+.patients-table tbody tr.ktas-4.selected { border-left: 3px solid #16A34A; }
+.patients-table tbody tr.ktas-5.selected { border-left: 3px solid #2563EB; }
 
 .patients-table td {
   padding: 12px 16px;
@@ -249,7 +246,7 @@
   vertical-align: middle;
 }
 
-/* KTAS Badge */
+/* KTAS 배지 */
 .ktas-badge {
   display: inline-flex;
   align-items: center;
@@ -269,7 +266,7 @@
   font-weight: 500;
 }
 
-/* Patient 정보 셀 */
+/* 테이블 셀 스타일 */
 .patient-id {
   font-family: "SF Mono", "Monaco", monospace;
   font-size: 12px;
@@ -297,7 +294,6 @@
   color: #1B1C1F;
 }
 
-/* Chief Complaint 셀 - 말줄임 처리 */
 .complaint-cell {
   max-width: 150px;
   white-space: nowrap;
@@ -306,69 +302,48 @@
   color: #585C63;
 }
 
-/* ===== 하단: Detail Section ===== */
+/* =============================================
+   하단: 환자 상세 정보 섹션
+============================================= */
 .detail-section {
   background: #FFFFFF;
   border-radius: 12px;
   border: 1px solid #E0E3E8;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .detail-content {
-  display: grid;
-  grid-template-columns: 180px 1fr auto;
+  display: flex;
+  align-items: center;
   gap: 24px;
-  padding: 20px;
+  padding: 16px 24px;
+  width: 100%;
   height: 100%;
-  align-items: start;
 }
 
-/* X-ray Preview */
-.xray-preview {
+/* X-ray 썸네일 */
+.xray-thumbnail {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.xray-label {
-  display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #585C63;
-  text-transform: uppercase;
+  flex-shrink: 0;
 }
 
-.xray-image {
-  width: 100%;
-  aspect-ratio: 1;
-  background: #1B1C1F;
+.xray-thumbnail .xray-image {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #1B1C1F 0%, #2A2C30 100%);
   border-radius: 8px;
-  overflow: hidden;
-}
-
-.xray-placeholder {
-  width: 100%;
-  height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   color: #585C63;
 }
 
-.xray-placeholder svg {
-  opacity: 0.5;
-}
-
-.xray-placeholder span {
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-.xray-meta {
+.xray-thumbnail .xray-time {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -376,160 +351,191 @@
   color: #8D9198;
 }
 
-.xray-meta svg {
-  flex-shrink: 0;
-}
-
-/* Patient Info */
-.patient-info {
+/* 환자 정보 그룹 */
+.patient-info-group {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.info-header {
+/* 헤더 라인 */
+.info-header-line {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.info-header h3 {
+.patient-name-large {
   font-size: 18px;
   font-weight: 700;
   color: #1B1C1F;
-  margin: 0;
 }
 
-.patient-id-tag {
+.patient-meta {
+  font-size: 14px;
+  color: #585C63;
+}
+
+.patient-id-small {
   font-size: 12px;
   font-family: "SF Mono", "Monaco", monospace;
-  color: #585C63;
-  background: #F0F2F5;
-  padding: 4px 8px;
+  color: #8D9198;
+  background: #F5F7FA;
+  padding: 2px 8px;
   border-radius: 4px;
 }
 
-.ktas-tag {
+.ktas-chip {
   font-size: 11px;
   font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+/* 진단 정보 라인 */
+.diagnosis-line {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.diagnosis-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.diagnosis-item .item-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8D9198;
+  text-transform: uppercase;
+}
+
+.diagnosis-item .item-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1B1C1F;
+}
+
+.diagnosis-item .item-sub {
+  font-size: 12px;
+  color: #8D9198;
+}
+
+.diagnosis-item.confidence {
+  background: #EAEFFF;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: 6px;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px;
-  background: #F5F7FA;
-  border-radius: 8px;
-}
-
-.info-item svg {
-  color: #3D6BFF;
-  margin-bottom: 4px;
-}
-
-.info-label {
-  font-size: 11px;
-  color: #8D9198;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-
-.info-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1B1C1F;
-}
-
-/* 6대 바이탈 사인 */
-.vitals-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-}
-
-.vital-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 12px;
-  background: #F5F7FA;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.vital-label {
-  font-size: 10px;
-  color: #8D9198;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.vital-value {
-  font-size: 13px;
+.diagnosis-item .confidence-value {
+  font-size: 14px;
   font-weight: 700;
-  color: #1B1C1F;
+  color: #3D6BFF;
 }
 
-/* AI Findings */
-.ai-findings {
-  padding: 12px;
+/* 바이탈 라인 */
+.vitals-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vital-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
   background: #F5F7FA;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
-.findings-label {
-  font-size: 11px;
+.vital-chip .vital-label {
+  font-size: 10px;
+  font-weight: 600;
   color: #8D9198;
   text-transform: uppercase;
-  font-weight: 500;
-  display: block;
-  margin-bottom: 8px;
 }
 
-.ai-findings ul {
-  margin: 0;
-  padding-left: 16px;
-}
-
-.ai-findings li {
+.vital-chip .vital-value {
   font-size: 13px;
+  font-weight: 600;
   color: #3C3E44;
-  margin-bottom: 4px;
 }
 
-.ai-findings li:last-child {
-  margin-bottom: 0;
+/* 오른쪽: AI Findings + 버튼 */
+.detail-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
 }
 
-/* Action Buttons */
+/* AI Findings 박스 */
+.findings-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #F8FAFC;
+  border-radius: 10px;
+  border: 1px solid #E0E3E8;
+  min-width: 180px;
+  max-width: 240px;
+}
+
+.findings-box .findings-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #8D9198;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.findings-box .findings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.findings-box .finding-tag {
+  font-size: 12px;
+  color: #3C3E44;
+  padding: 4px 0;
+  border-bottom: 1px solid #EDF0F4;
+}
+
+.findings-box .finding-tag:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* 액션 버튼 */
 .action-buttons {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-self: center;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease;
   white-space: nowrap;
+  min-width: 120px;
 }
 
 .action-btn.primary {
@@ -538,29 +544,27 @@
 }
 
 .action-btn.primary:hover {
-  background: #2952CC;
+  background: #2E53E5;
 }
 
 .action-btn.secondary {
-  background: #F5F7FA;
-  color: #585C63;
-  border: 1px solid #E0E3E8;
+  background: #FFFFFF;
+  color: #3D6BFF;
+  border: 1.5px solid #3D6BFF;
 }
 
 .action-btn.secondary:hover {
   background: #EAEFFF;
-  color: #3D6BFF;
-  border-color: #3D6BFF;
 }
 
 /* Empty State */
 .empty-state {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16px;
+  width: 100%;
   height: 100%;
-  gap: 12px;
   color: #8D9198;
 }
 
@@ -568,20 +572,22 @@
   opacity: 0.3;
 }
 
-.empty-state h3 {
+.empty-text h3 {
   font-size: 16px;
   font-weight: 600;
   color: #585C63;
-  margin: 0;
+  margin: 0 0 4px 0;
 }
 
-.empty-state p {
+.empty-text p {
   font-size: 13px;
   color: #8D9198;
   margin: 0;
 }
 
-/* ===== 스크롤바 ===== */
+/* =============================================
+   스크롤바
+============================================= */
 .table-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -600,19 +606,18 @@
   background: #8D9198;
 }
 
-/* ===== 반응형 ===== */
+/* =============================================
+   반응형
+============================================= */
 @media (max-width: 1400px) {
   .detail-content {
-    grid-template-columns: 160px 1fr auto;
-    gap: 16px;
+    gap: 20px;
+    padding: 14px 20px;
   }
-  
-  .info-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .vitals-grid {
-    grid-template-columns: repeat(3, 1fr);
+
+  .findings-box {
+    min-width: 160px;
+    max-width: 200px;
   }
 }
 
@@ -620,15 +625,29 @@
   .header-right {
     gap: 8px;
   }
-  
+
   .search-box {
     width: 180px;
   }
-  
+
   .detail-content {
-    grid-template-columns: 140px 1fr auto;
-    gap: 12px;
-    padding: 16px;
+    gap: 16px;
+    padding: 12px 16px;
+  }
+
+  .xray-thumbnail .xray-image {
+    width: 70px;
+    height: 70px;
+  }
+
+  .findings-box {
+    min-width: 140px;
+    padding: 10px 12px;
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    min-width: 100px;
   }
 }
 
@@ -636,34 +655,29 @@
   .triage-board {
     grid-template-rows: 1fr 1fr;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .header-right {
     width: 100%;
     flex-wrap: wrap;
   }
-  
+
   .detail-content {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+    flex-wrap: wrap;
   }
-  
-  .xray-preview {
-    grid-row: 1 / 3;
+
+  .patient-info-group {
+    flex: 1 1 300px;
   }
-  
-  .action-buttons {
-    flex-direction: row;
-    grid-column: 1 / -1;
-  }
-  
-  .vitals-grid {
-    grid-template-columns: repeat(3, 1fr);
+
+  .detail-right {
+    flex: 1 1 100%;
+    justify-content: space-between;
   }
 }
 
@@ -672,27 +686,33 @@
     padding: 12px;
     gap: 12px;
   }
-  
+
   .stats-badges {
     display: none;
   }
-  
+
   .patients-table th,
   .patients-table td {
     padding: 8px 10px;
     font-size: 12px;
   }
-  
+
   .detail-content {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
-  
-  .xray-preview {
-    display: none;
+
+  .xray-thumbnail {
+    flex-direction: row;
   }
-  
-  .vitals-grid {
-    grid-template-columns: repeat(2, 1fr);
+
+  .detail-right {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .action-buttons {
+    flex-direction: row;
   }
 }

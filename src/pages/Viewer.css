@@ -114,8 +114,6 @@
   background: #1B1C1F;
   position: relative;
   overflow: hidden;
-  
-  /* 드래그 커서 스타일 - 핵심! */
   cursor: grab;
   user-select: none;
 }
@@ -129,7 +127,6 @@
 .xray-image-wrapper {
   position: relative;
   transition: filter 0.2s ease;
-  /* transform은 인라인 스타일로 적용 (드래그 위치, 줌, 회전) */
 }
 
 /* 드래그 중에는 transition 제거 (부드러운 드래그를 위해) */
@@ -159,21 +156,18 @@
   user-select: none;
 }
 
-.xray-placeholder {
+/* 플레이스홀더 (이미지 없을 때) */
+.viewer-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 16px;
   color: #585C63;
 }
 
-.placeholder-text {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.placeholder-id {
-  font-size: 13px;
+.viewer-placeholder span {
+  font-size: 14px;
   color: #8D9198;
 }
 
@@ -216,7 +210,7 @@
   opacity: 0.7;
 }
 
-/* ===== 하단 메타 정보 바 - 한 줄 스타일 ===== */
+/* ===== 하단 메타 정보 바 ===== */
 .viewer-meta {
   display: flex;
   align-items: center;
@@ -261,19 +255,19 @@
   letter-spacing: 0.5px;
 }
 
-.meta-item.highlight {
+.meta-item.diagnosis-item {
   background: rgba(61, 107, 255, 0.1);
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid rgba(61, 107, 255, 0.2);
 }
 
-.meta-item.highlight svg {
-  color: #52C39A;
+.meta-item.diagnosis-item svg {
+  color: #3D6BFF;
 }
 
-.meta-value.confidence {
-  color: #52C39A;
+.meta-value.diagnosis {
+  color: #3D6BFF;
   font-weight: 600;
 }
 

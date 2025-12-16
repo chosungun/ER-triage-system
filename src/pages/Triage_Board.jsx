@@ -1,4 +1,6 @@
 // src/pages/Triage_Board.jsx
+// REM XTA - Triage Board (응급실 환자 리스트)
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -10,15 +12,15 @@ import {
   AlertCircle,
   AlertTriangle,
   CheckCircle,
-  FileText,
   Activity,
-  Calendar,
   Eye,
   ArrowRight
 } from "lucide-react";
 import "./Triage_Board.css";
 
+// =============================================
 // 샘플 환자 데이터 (KTAS 5단계 적용)
+// =============================================
 const samplePatients = [
   {
     id: "P-2024-001",
@@ -34,13 +36,10 @@ const samplePatients = [
     heartRate: "128",
     temperature: "36.8°C",
     oxygenSat: "82%",
+    respiratoryRate: "32",
+    gcs: "14",
     aiConfidence: 96,
-    findings: ["좌측 긴장성 기흉", "종격동 편위"],
-    recommendations: [
-      "즉시 흉관 삽입",
-      "응급 중재 필요",
-      "흉부외과 협진"
-    ]
+    findings: ["좌측 긴장성 기흉", "종격동 편위"]
   },
   {
     id: "P-2024-002",
@@ -56,17 +55,14 @@ const samplePatients = [
     heartRate: "110",
     temperature: "39.2°C",
     oxygenSat: "89%",
+    respiratoryRate: "28",
+    gcs: "15",
     aiConfidence: 94,
-    findings: ["우하엽 경화", "양측 침윤"],
-    recommendations: [
-      "신속 항생제 투여",
-      "산소 치료",
-      "중환자실 고려"
-    ]
+    findings: ["우하엽 경화", "양측 침윤"]
   },
   {
     id: "P-2024-003",
-    name: "탕후루",
+    name: "박준혁",
     age: 38,
     gender: "M",
     captureTime: "10:12",
@@ -78,13 +74,10 @@ const samplePatients = [
     heartRate: "88",
     temperature: "36.5°C",
     oxygenSat: "94%",
+    respiratoryRate: "20",
+    gcs: "15",
     aiConfidence: 87,
-    findings: ["심장 비대 (CTR 0.58)", "경미한 폐울혈"],
-    recommendations: [
-      "심초음파 검사",
-      "심장내과 협진",
-      "혈압 조절"
-    ]
+    findings: ["심장 비대 (CTR 0.58)", "경미한 폐울혈"]
   },
   {
     id: "P-2024-004",
@@ -100,12 +93,10 @@ const samplePatients = [
     heartRate: "78",
     temperature: "37.4°C",
     oxygenSat: "97%",
+    respiratoryRate: "18",
+    gcs: "15",
     aiConfidence: 82,
-    findings: ["기관지 벽 비후"],
-    recommendations: [
-      "대증 치료",
-      "외래 추적 관찰"
-    ]
+    findings: ["기관지 벽 비후"]
   },
   {
     id: "P-2024-005",
@@ -121,13 +112,10 @@ const samplePatients = [
     heartRate: "92",
     temperature: "37.8°C",
     oxygenSat: "90%",
+    respiratoryRate: "24",
+    gcs: "15",
     aiConfidence: 91,
-    findings: ["좌측 대량 흉수", "폐 하엽 무기폐"],
-    recommendations: [
-      "흉수 천자 고려",
-      "원인 감별 위한 추가 검사",
-      "호흡기내과 협진"
-    ]
+    findings: ["좌측 대량 흉수", "폐 하엽 무기폐"]
   },
   {
     id: "P-2024-006",
@@ -143,13 +131,10 @@ const samplePatients = [
     heartRate: "78",
     temperature: "37.2°C",
     oxygenSat: "95%",
+    respiratoryRate: "18",
+    gcs: "15",
     aiConfidence: 82,
-    findings: ["좌측 하엽 무기폐", "수술 후 변화"],
-    recommendations: [
-      "호흡 재활 치료",
-      "체위 변경 권장",
-      "추적 촬영 필요"
-    ]
+    findings: ["좌측 하엽 무기폐", "수술 후 변화"]
   },
   {
     id: "P-2024-007",
@@ -165,11 +150,10 @@ const samplePatients = [
     heartRate: "72",
     temperature: "36.5°C",
     oxygenSat: "99%",
+    respiratoryRate: "16",
+    gcs: "15",
     aiConfidence: 98,
-    findings: ["특이 소견 없음"],
-    recommendations: [
-      "정기 검진 권장"
-    ]
+    findings: ["특이 소견 없음"]
   },
   {
     id: "P-2024-008",
@@ -185,51 +169,51 @@ const samplePatients = [
     heartRate: "80",
     temperature: "36.6°C",
     oxygenSat: "98%",
+    respiratoryRate: "16",
+    gcs: "15",
     aiConfidence: 75,
-    findings: ["폐실질 이상 없음", "늑연골 부위 압통"],
-    recommendations: [
-      "진통제 처방",
-      "외래 추적"
-    ]
+    findings: ["폐실질 이상 없음", "늑연골 부위 압통"]
   }
 ];
 
-// KTAS 설정
+// =============================================
+// KTAS 설정 (한국형 응급환자 분류체계)
+// =============================================
 const ktasConfig = {
-  1: { 
-    label: "Level 1", 
+  1: {
+    label: "Level 1",
     labelKo: "소생",
     color: "#DC2626",
     bgColor: "#FEE2E2",
     icon: AlertCircle,
     description: "즉각적"
   },
-  2: { 
-    label: "Level 2", 
+  2: {
+    label: "Level 2",
     labelKo: "긴급",
     color: "#EA580C",
     bgColor: "#FFEDD5",
     icon: AlertTriangle,
     description: "15분 이내"
   },
-  3: { 
-    label: "Level 3", 
+  3: {
+    label: "Level 3",
     labelKo: "응급",
     color: "#CA8A04",
     bgColor: "#FEF9C3",
     icon: AlertTriangle,
     description: "30분 이내"
   },
-  4: { 
-    label: "Level 4", 
+  4: {
+    label: "Level 4",
     labelKo: "준응급",
     color: "#16A34A",
     bgColor: "#DCFCE7",
     icon: CheckCircle,
     description: "1시간 이내"
   },
-  5: { 
-    label: "Level 5", 
+  5: {
+    label: "Level 5",
     labelKo: "비응급",
     color: "#2563EB",
     bgColor: "#DBEAFE",
@@ -238,33 +222,37 @@ const ktasConfig = {
   }
 };
 
-// 통계 계산
-const getStats = (patients) => {
-  return {
-    total: patients.length,
-    level1: patients.filter(p => p.ktas === 1).length,
-    level2: patients.filter(p => p.ktas === 2).length,
-    level3: patients.filter(p => p.ktas === 3).length,
-    level4: patients.filter(p => p.ktas === 4).length,
-    level5: patients.filter(p => p.ktas === 5).length,
-  };
-};
+// =============================================
+// 통계 계산 함수
+// =============================================
+const getStats = (patients) => ({
+  total: patients.length,
+  level1: patients.filter((p) => p.ktas === 1).length,
+  level2: patients.filter((p) => p.ktas === 2).length,
+  level3: patients.filter((p) => p.ktas === 3).length,
+  level4: patients.filter((p) => p.ktas === 4).length,
+  level5: patients.filter((p) => p.ktas === 5).length
+});
 
+// =============================================
+// Triage_Board 컴포넌트
+// =============================================
 function Triage_Board() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterKtas, setFilterKtas] = useState("all");
   const [sortBy, setSortBy] = useState("ktas");
-  
+
   const stats = getStats(samplePatients);
 
-  // 필터링 및 정렬
+  // 필터링 및 정렬 로직
   const filteredPatients = samplePatients
-    .filter(patient => {
-      const matchesSearch = 
+    .filter((patient) => {
+      const matchesSearch =
         patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         patient.id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = filterKtas === "all" || patient.ktas === parseInt(filterKtas);
+      const matchesFilter =
+        filterKtas === "all" || patient.ktas === parseInt(filterKtas);
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
@@ -273,10 +261,12 @@ function Triage_Board() {
       return 0;
     });
 
+  // 환자 선택 핸들러
   const handlePatientClick = (patient) => {
     setSelectedPatient(patient);
   };
 
+  // KTAS 아이콘 렌더링
   const getKtasIcon = (ktas) => {
     const Icon = ktasConfig[ktas].icon;
     return <Icon size={14} />;
@@ -284,7 +274,7 @@ function Triage_Board() {
 
   return (
     <main className="triage-board">
-      {/* 상단: 환자 테이블 섹션 (2/3) */}
+      {/* ========== 상단: 환자 테이블 (2/3) ========== */}
       <section className="patients-section">
         <div className="section-header">
           <div className="header-left">
@@ -294,24 +284,14 @@ function Triage_Board() {
                 <User size={14} />
                 {stats.total}
               </span>
-              <span className="stat-badge ktas-1">
-                {stats.level1}
-              </span>
-              <span className="stat-badge ktas-2">
-                {stats.level2}
-              </span>
-              <span className="stat-badge ktas-3">
-                {stats.level3}
-              </span>
-              <span className="stat-badge ktas-4">
-                {stats.level4}
-              </span>
-              <span className="stat-badge ktas-5">
-                {stats.level5}
-              </span>
+              <span className="stat-badge ktas-1">{stats.level1}</span>
+              <span className="stat-badge ktas-2">{stats.level2}</span>
+              <span className="stat-badge ktas-3">{stats.level3}</span>
+              <span className="stat-badge ktas-4">{stats.level4}</span>
+              <span className="stat-badge ktas-5">{stats.level5}</span>
             </div>
           </div>
-          
+
           <div className="header-right">
             {/* 검색창 */}
             <div className="search-box">
@@ -323,12 +303,12 @@ function Triage_Board() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
-            {/* 필터 */}
+
+            {/* KTAS 필터 */}
             <div className="filter-group">
               <Filter size={16} />
-              <select 
-                value={filterKtas} 
+              <select
+                value={filterKtas}
                 onChange={(e) => setFilterKtas(e.target.value)}
               >
                 <option value="all">All KTAS</option>
@@ -340,11 +320,11 @@ function Triage_Board() {
               </select>
               <ChevronDown size={14} className="select-arrow" />
             </div>
-            
+
             {/* 정렬 */}
             <div className="filter-group">
-              <select 
-                value={sortBy} 
+              <select
+                value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
                 <option value="ktas">Sort by KTAS</option>
@@ -355,6 +335,7 @@ function Triage_Board() {
           </div>
         </div>
 
+        {/* 환자 테이블 */}
         <div className="table-container">
           <table className="patients-table">
             <thead>
@@ -376,7 +357,7 @@ function Triage_Board() {
                   onClick={() => handlePatientClick(patient)}
                 >
                   <td>
-                    <span 
+                    <span
                       className="ktas-badge"
                       style={{
                         backgroundColor: ktasConfig[patient.ktas].bgColor,
@@ -385,12 +366,16 @@ function Triage_Board() {
                     >
                       {getKtasIcon(patient.ktas)}
                       <span className="ktas-level">{patient.ktas}</span>
-                      <span className="ktas-label">{ktasConfig[patient.ktas].labelKo}</span>
+                      <span className="ktas-label">
+                        {ktasConfig[patient.ktas].labelKo}
+                      </span>
                     </span>
                   </td>
                   <td className="patient-id">{patient.id}</td>
                   <td className="patient-name">{patient.name}</td>
-                  <td>{patient.age} / {patient.gender}</td>
+                  <td>
+                    {patient.age} / {patient.gender}
+                  </td>
                   <td>
                     <span className="time-cell">
                       <Clock size={14} />
@@ -406,121 +391,141 @@ function Triage_Board() {
         </div>
       </section>
 
-      {/* 하단: 환자 상세 정보 섹션 (1/3) */}
+      {/* ========== 하단: 환자 상세 정보 (1/3) ========== */}
       <section className="detail-section">
         {selectedPatient ? (
           <div className="detail-content">
-            {/* X-ray 섬네일 */}
-            <div className="xray-preview">
-              <div className="xray-label">
-                <FileText size={14} />
-                Chest X-ray
-              </div>
+            {/* X-ray 썸네일 */}
+            <div className="xray-thumbnail">
               <div className="xray-image">
-                <div className="xray-placeholder">
-                  <Activity size={32} />
-                  <span>X-ray Image</span>
-                </div>
+                <Activity size={24} />
               </div>
-              <div className="xray-meta">
-                <span><Calendar size={12} /> {selectedPatient.captureTime}</span>
-              </div>
+              <span className="xray-time">
+                <Clock size={10} />
+                {selectedPatient.captureTime}
+              </span>
             </div>
 
             {/* 환자 정보 */}
-            <div className="patient-info">
-              <div className="info-header">
-                <h3>{selectedPatient.name}</h3>
-                <span className="patient-id-tag">{selectedPatient.id}</span>
-                <span 
-                  className="ktas-tag"
+            <div className="patient-info-group">
+              {/* 이름/나이/ID/KTAS */}
+              <div className="info-header-line">
+                <span className="patient-name-large">
+                  {selectedPatient.name}
+                </span>
+                <span className="patient-meta">
+                  {selectedPatient.age}세 ·{" "}
+                  {selectedPatient.gender === "M" ? "남" : "여"}
+                </span>
+                <span className="patient-id-small">{selectedPatient.id}</span>
+                <span
+                  className="ktas-chip"
                   style={{
-                    backgroundColor: ktasConfig[selectedPatient.ktas].bgColor,
+                    backgroundColor:
+                      ktasConfig[selectedPatient.ktas].bgColor,
                     color: ktasConfig[selectedPatient.ktas].color
                   }}
                 >
-                  KTAS {selectedPatient.ktas} - {ktasConfig[selectedPatient.ktas].labelKo}
+                  KTAS {selectedPatient.ktas}
                 </span>
               </div>
-              
-              <div className="info-grid">
-                <div className="info-item">
-                  <User size={14} />
-                  <span className="info-label">Age/Sex</span>
-                  <span className="info-value">{selectedPatient.age}세 / {selectedPatient.gender === "M" ? "남" : "여"}</span>
+
+              {/* 진단/주호소/AI */}
+              <div className="diagnosis-line">
+                <div className="diagnosis-item">
+                  <span className="item-label">Dx</span>
+                  <span className="item-value">
+                    {selectedPatient.diagnosis}
+                  </span>
+                  <span className="item-sub">
+                    ({selectedPatient.diagnosisKo})
+                  </span>
                 </div>
-                <div className="info-item">
-                  <Activity size={14} />
-                  <span className="info-label">Chief Complaint</span>
-                  <span className="info-value">{selectedPatient.chiefComplaint}</span>
+                <div className="diagnosis-item">
+                  <span className="item-label">C/C</span>
+                  <span className="item-value">
+                    {selectedPatient.chiefComplaint}
+                  </span>
                 </div>
-                <div className="info-item">
-                  <FileText size={14} />
-                  <span className="info-label">AI Diagnosis</span>
-                  <span className="info-value">{selectedPatient.diagnosis} ({selectedPatient.diagnosisKo})</span>
-                </div>
-                <div className="info-item">
-                  <AlertCircle size={14} />
-                  <span className="info-label">AI Confidence</span>
-                  <span className="info-value">{selectedPatient.aiConfidence}%</span>
+                <div className="diagnosis-item confidence">
+                  <span className="item-label">AI</span>
+                  <span className="confidence-value">
+                    {selectedPatient.aiConfidence}%
+                  </span>
                 </div>
               </div>
 
-              {/* 6대 바이탈 사인 */}
-              <div className="vitals-grid">
-                <div className="vital-item">
+              {/* 바이탈 사인 */}
+              <div className="vitals-line">
+                <div className="vital-chip">
                   <span className="vital-label">BP</span>
-                  <span className="vital-value">{selectedPatient.bloodPressure}</span>
+                  <span className="vital-value">
+                    {selectedPatient.bloodPressure}
+                  </span>
                 </div>
-                <div className="vital-item">
+                <div className="vital-chip">
                   <span className="vital-label">HR</span>
-                  <span className="vital-value">{selectedPatient.heartRate} bpm</span>
+                  <span className="vital-value">
+                    {selectedPatient.heartRate}
+                  </span>
                 </div>
-                <div className="vital-item">
-                  <span className="vital-label">Temp</span>
-                  <span className="vital-value">{selectedPatient.temperature}</span>
+                <div className="vital-chip">
+                  <span className="vital-label">T</span>
+                  <span className="vital-value">
+                    {selectedPatient.temperature}
+                  </span>
                 </div>
-                <div className="vital-item">
+                <div className="vital-chip">
                   <span className="vital-label">SpO2</span>
-                  <span className="vital-value">{selectedPatient.oxygenSat}</span>
+                  <span className="vital-value">
+                    {selectedPatient.oxygenSat}
+                  </span>
                 </div>
-                <div className="vital-item">
+                <div className="vital-chip">
                   <span className="vital-label">RR</span>
-                  <span className="vital-value">{selectedPatient.respiratoryRate || "18"}/min</span>
+                  <span className="vital-value">
+                    {selectedPatient.respiratoryRate}
+                  </span>
                 </div>
-                <div className="vital-item">
+                <div className="vital-chip">
                   <span className="vital-label">GCS</span>
-                  <span className="vital-value">{selectedPatient.gcs || "15"}</span>
+                  <span className="vital-value">{selectedPatient.gcs}</span>
                 </div>
-              </div>
-
-              <div className="ai-findings">
-                <span className="findings-label">Findings</span>
-                <ul>
-                  {selectedPatient.findings.map((finding, idx) => (
-                    <li key={idx}>{finding}</li>
-                  ))}
-                </ul>
               </div>
             </div>
 
-            {/* 액션 버튼 */}
-            <div className="action-buttons">
-              <Link to="/followup" className="action-btn secondary">
-                <Eye size={16} />
-                View in Follow-up
-              </Link>
-              <Link to="/viewer" className="action-btn primary">
-                <ArrowRight size={16} />
-                Open in Viewer
-              </Link>
+            {/* AI Findings + 버튼 */}
+            <div className="detail-right">
+              <div className="findings-box">
+                <span className="findings-title">AI Findings</span>
+                <div className="findings-list">
+                  {selectedPatient.findings.map((finding, idx) => (
+                    <span key={idx} className="finding-tag">
+                      {finding}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="action-buttons">
+                <Link to="/followup" className="action-btn secondary">
+                  <Eye size={16} />
+                  Follow-up
+                </Link>
+                <Link to="/viewer" className="action-btn primary">
+                  <ArrowRight size={16} />
+                  Viewer
+                </Link>
+              </div>
             </div>
           </div>
         ) : (
           <div className="empty-state">
-            <User size={48} />
-            <h3>Select a Patient</h3>
-            <p>Click on a patient row above to view detailed information</p>
+            <User size={40} />
+            <div className="empty-text">
+              <h3>Select a Patient</h3>
+              <p>Click on a patient row above to view details</p>
+            </div>
           </div>
         )}
       </section>
