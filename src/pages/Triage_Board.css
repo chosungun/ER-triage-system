@@ -1,6 +1,7 @@
 /* src/pages/Triage_Board.css */
 /* REM XTA - Triage Board */
 /* Flat Clinical UI + KTAS 5-Level System */
+/* 하단 카드: 흰색 배경 + 얇은 가로 레이아웃 최적화 */
 
 /* =============================================
    메인 레이아웃
@@ -234,11 +235,25 @@
 }
 
 /* KTAS별 선택 시 좌측 보더 */
-.patients-table tbody tr.ktas-1.selected { border-left: 3px solid #DC2626; }
-.patients-table tbody tr.ktas-2.selected { border-left: 3px solid #EA580C; }
-.patients-table tbody tr.ktas-3.selected { border-left: 3px solid #CA8A04; }
-.patients-table tbody tr.ktas-4.selected { border-left: 3px solid #16A34A; }
-.patients-table tbody tr.ktas-5.selected { border-left: 3px solid #2563EB; }
+.patients-table tbody tr.ktas-1.selected {
+  border-left: 3px solid #DC2626;
+}
+
+.patients-table tbody tr.ktas-2.selected {
+  border-left: 3px solid #EA580C;
+}
+
+.patients-table tbody tr.ktas-3.selected {
+  border-left: 3px solid #CA8A04;
+}
+
+.patients-table tbody tr.ktas-4.selected {
+  border-left: 3px solid #16A34A;
+}
+
+.patients-table tbody tr.ktas-5.selected {
+  border-left: 3px solid #2563EB;
+}
 
 .patients-table td {
   padding: 12px 16px;
@@ -303,194 +318,117 @@
 }
 
 /* =============================================
-   하단: 환자 상세 정보 섹션
+   하단: 환자 상세 카드 (고정 그리드 레이아웃)
 ============================================= */
 .detail-section {
-  background: #FFFFFF;
+  background: #F5F7FA;
   border-radius: 12px;
   border: 1px solid #E0E3E8;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-}
-
-.detail-content {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 16px 24px;
-  width: 100%;
   height: 100%;
+  transition: background 0.2s ease;
 }
 
-/* X-ray 썸네일 */
-.xray-thumbnail {
+/* 환자 선택 시 흰색 배경 */
+.detail-section:has(.detail-card) {
+  background: #FFFFFF;
+}
+
+/* 메인 카드: 3열 고정 */
+.detail-card {
+  display: grid;
+  /* 중앙 칼럼을 살짝 줄이고(=좌측 컬럼을 키움), 우측 액션(130px)은 고정 유지 */
+  grid-template-columns: 190px 1fr 130px;
+  gap: 12px;
+  padding: 14px 18px;
+  height: 100%;
+  align-items: center;
+}
+
+/* ===== 좌측: X-ray 썸네일 ===== */
+.card-xray {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 8px;
+  height: 100%;
+  justify-content: center;
+  overflow: visible;
 }
 
-.xray-thumbnail .xray-image {
-  width: 80px;
-  height: 80px;
+.xray-thumb {
+  /* 실제 크기 자체를 키워서(겹침 방지), 시간은 독립적으로 아래에 둠 */
+  width: 180px;
+  height: 180px;
   background: linear-gradient(135deg, #1B1C1F 0%, #2A2C30 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #585C63;
+  overflow: hidden; /* 이미지 모서리 라운드 유지 */
 }
 
-.xray-thumbnail .xray-time {
+.xray-thumb .xray-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.xray-time {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 12px;
   color: #8D9198;
+  justify-content: flex-start;
+  width: 100%;
+  position: relative;
+  top: -3px;
 }
 
-/* 환자 정보 그룹 */
-.patient-info-group {
-  flex: 1;
+/* ===== 중앙: 고정 그리드 (3열 x 2행) ===== */
+.card-grid {
+  display: grid;
+  /* 상단 3열 + 하단 6열(=6컬럼 기준) */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: auto auto;
+  gap: 8px;
+  height: 100%;
+  align-content: center;
+  position: relative;
+  top: -10px;
+}
+
+/* 상단(1행): 3개 셀을 2칸씩 먹여서 3열처럼 보이게 */
+.card-grid .cell-patient,
+.card-grid .cell-diagnosis,
+.card-grid .cell-findings {
+  grid-row: 1;
+  grid-column: span 2;
+}
+
+/* 하단(2행): Vital/작은 정보들을 6칸에 1칸씩 */
+.card-grid .cell-vital {
+  grid-row: 2;
+  grid-column: span 1;
+  padding: 8px 8px;
+}
+
+/* 그리드 셀 공통 */
+.grid-cell {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
+  padding: 8px 10px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid #EDF0F4;
   min-width: 0;
 }
 
-/* 헤더 라인 */
-.info-header-line {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.patient-name-large {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1B1C1F;
-}
-
-.patient-meta {
-  font-size: 14px;
-  color: #585C63;
-}
-
-.patient-id-small {
-  font-size: 12px;
-  font-family: "SF Mono", "Monaco", monospace;
-  color: #8D9198;
-  background: #F5F7FA;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.ktas-chip {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 10px;
-}
-
-/* 진단 정보 라인 */
-.diagnosis-line {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.diagnosis-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.diagnosis-item .item-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #8D9198;
-  text-transform: uppercase;
-}
-
-.diagnosis-item .item-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1B1C1F;
-}
-
-.diagnosis-item .item-sub {
-  font-size: 12px;
-  color: #8D9198;
-}
-
-.diagnosis-item.confidence {
-  background: #EAEFFF;
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-
-.diagnosis-item .confidence-value {
-  font-size: 14px;
-  font-weight: 700;
-  color: #3D6BFF;
-}
-
-/* 바이탈 라인 */
-.vitals-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.vital-chip {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  background: #F5F7FA;
-  border-radius: 6px;
-}
-
-.vital-chip .vital-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: #8D9198;
-  text-transform: uppercase;
-}
-
-.vital-chip .vital-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #3C3E44;
-}
-
-/* 오른쪽: AI Findings + 버튼 */
-.detail-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-shrink: 0;
-}
-
-/* AI Findings 박스 */
-.findings-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 16px;
-  background: #F8FAFC;
-  border-radius: 10px;
-  border: 1px solid #E0E3E8;
-  min-width: 180px;
-  max-width: 240px;
-}
-
-.findings-box .findings-title {
+.cell-label {
   font-size: 10px;
   font-weight: 700;
   color: #8D9198;
@@ -498,62 +436,125 @@
   letter-spacing: 0.5px;
 }
 
-.findings-box .findings-list {
+.cell-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.findings-box .finding-tag {
+/* Row 1: Patient 셀 */
+.cell-patient .patient-name-lg {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1B1C1F;
+  line-height: 1.2;
+}
+
+.cell-patient .patient-meta {
   font-size: 12px;
+  color: #585C63;
+}
+
+.cell-patient .ktas-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  width: fit-content;
+  margin-top: 2px;
+}
+
+/* Row 1: Diagnosis 셀 */
+.cell-diagnosis .dx-main {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1B1C1F;
+  line-height: 1.2;
+}
+
+.cell-diagnosis .dx-sub {
+  font-size: 12px;
+  color: #585C63;
+}
+
+.cell-diagnosis .dx-confidence {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3D6BFF;
+  margin-top: 2px;
+}
+
+/* Row 1: Findings 셀 */
+.cell-findings .finding-item {
+  font-size: 13px;
   color: #3C3E44;
-  padding: 4px 0;
-  border-bottom: 1px solid #EDF0F4;
+  padding-left: 10px;
+  border-left: 2px solid #3D6BFF;
+  line-height: 1.4;
 }
 
-.findings-box .finding-tag:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+/* Row 2: Vital 셀 */
+.cell-vital {
+  align-items: center;
+  text-align: center;
+  padding: 10px 12px;
 }
 
-/* 액션 버튼 */
-.action-buttons {
+.cell-vital .vital-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1B1C1F;
+}
+
+.cell-vital .vital-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8D9198;
+}
+
+/* ===== 우측: 액션 버튼 ===== */
+.card-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  top: -6px;
 }
 
-.action-btn {
+.btn-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 20px;
+  gap: 8px;
+  padding: 14px 20px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
-  min-width: 120px;
 }
 
-.action-btn.primary {
+.btn-action.primary {
   background: #3D6BFF;
   color: #FFFFFF;
 }
 
-.action-btn.primary:hover {
+.btn-action.primary:hover {
   background: #2E53E5;
 }
 
-.action-btn.secondary {
+.btn-action.secondary {
   background: #FFFFFF;
   color: #3D6BFF;
   border: 1.5px solid #3D6BFF;
 }
 
-.action-btn.secondary:hover {
+.btn-action.secondary:hover {
   background: #EAEFFF;
 }
 
@@ -572,17 +573,21 @@
   opacity: 0.3;
 }
 
-.empty-text h3 {
+.empty-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.empty-title {
   font-size: 16px;
   font-weight: 600;
   color: #585C63;
-  margin: 0 0 4px 0;
 }
 
-.empty-text p {
+.empty-desc {
   font-size: 13px;
   color: #8D9198;
-  margin: 0;
 }
 
 /* =============================================
@@ -610,14 +615,23 @@
    반응형
 ============================================= */
 @media (max-width: 1400px) {
-  .detail-content {
-    gap: 20px;
-    padding: 14px 20px;
+  .detail-card {
+    grid-template-columns: 170px 1fr 130px;
+    gap: 14px;
+    padding: 12px 14px;
   }
 
-  .findings-box {
-    min-width: 160px;
-    max-width: 200px;
+  .xray-thumb {
+    width: 160px;
+    height: 160px;
+  }
+
+  .card-grid {
+    gap: 12px;
+  }
+
+  .grid-cell {
+    padding: 10px 14px;
   }
 }
 
@@ -630,24 +644,38 @@
     width: 180px;
   }
 
-  .detail-content {
+  .detail-card {
+    grid-template-columns: 155px 1fr 130px;
     gap: 16px;
+    padding: 14px 16px;
+  }
+
+  .xray-thumb {
+    width: 145px;
+    height: 145px;
+  }
+
+  .card-grid {
+    /* 좁아지면 3컬럼 기준으로 재배치 (상단 3, 하단은 3x2) */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto auto auto;
+  }
+
+  .card-grid .cell-patient,
+  .card-grid .cell-diagnosis,
+  .card-grid .cell-findings {
+    grid-row: auto;
+    grid-column: span 1;
+  }
+
+  .card-grid .cell-vital {
+    grid-row: auto;
+    grid-column: span 1;
+  }
+
+  .btn-action {
     padding: 12px 16px;
-  }
-
-  .xray-thumbnail .xray-image {
-    width: 70px;
-    height: 70px;
-  }
-
-  .findings-box {
-    min-width: 140px;
-    padding: 10px 12px;
-  }
-
-  .action-btn {
-    padding: 8px 16px;
-    min-width: 100px;
+    font-size: 13px;
   }
 }
 
@@ -667,17 +695,27 @@
     flex-wrap: wrap;
   }
 
-  .detail-content {
-    flex-wrap: wrap;
+  .detail-card {
+    grid-template-columns: 150px 1fr;
+    grid-template-rows: 1fr auto;
   }
 
-  .patient-info-group {
-    flex: 1 1 300px;
+  .xray-thumb {
+    width: 140px;
+    height: 140px;
   }
 
-  .detail-right {
-    flex: 1 1 100%;
-    justify-content: space-between;
+  .card-xray {
+    grid-row: 1 / 3;
+  }
+
+  .card-actions {
+    flex-direction: row;
+    grid-column: 2;
+  }
+
+  .btn-action {
+    flex: 1;
   }
 }
 
@@ -697,22 +735,24 @@
     font-size: 12px;
   }
 
-  .detail-content {
-    flex-direction: column;
-    align-items: flex-start;
+  .detail-card {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .xray-thumbnail {
-    flex-direction: row;
+  .card-xray {
+    display: none;
   }
 
-  .detail-right {
-    width: 100%;
-    flex-direction: row;
+  .card-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .action-buttons {
+  .cell-patient {
+    grid-column: 1 / -1;
+  }
+
+  .card-actions {
     flex-direction: row;
   }
 }

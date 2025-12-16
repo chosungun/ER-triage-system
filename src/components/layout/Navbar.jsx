@@ -1,6 +1,6 @@
 // src/components/layout/Navbar.jsx
 import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { 
   HelpCircle,
   Globe,
@@ -18,6 +18,7 @@ import remLogo from "../../assets/rem_logo.png";
 function Navbar() {
   const [language, setLanguage] = useState("KO");
   const location = useLocation();
+  const navigate = useNavigate();
   
   // 대시보드(/) 페이지인지 확인
   const isDashboard = location.pathname === "/";
@@ -35,9 +36,21 @@ function Navbar() {
             <LayoutDashboard size={18} />
           </div>
         ) : (
-          <NavLink to="/" className="navbar__back-btn" title="Back to Dashboard">
+          <button
+            type="button"
+            className="navbar__back-btn"
+            title="Back"
+            onClick={() => {
+              // Go back in browser history; if there's no history entry, fallback to dashboard
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/");
+              }
+            }}
+          >
             <ArrowLeft size={18} />
-          </NavLink>
+          </button>
         )}
         
         <div className="navbar__brand">

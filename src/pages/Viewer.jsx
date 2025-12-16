@@ -1,5 +1,5 @@
 // src/pages/Viewer.jsx
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import {
   ZoomIn,
@@ -22,26 +22,109 @@ import {
 } from "lucide-react";
 import "./Viewer.css";
 
+// Vite: assets 폴더의 Fusion(Heatmap) 결과들을 미리 로드해 매칭
+// 파일명 예: HQ_Fusion_Result_Pneumonia_000.jpg
+const FUSION_IMAGES = import.meta.glob("../assets/HQ_Fusion_Result_Pneumonia_*.jpg", {
+  eager: true,
+  import: "default",
+});
+
 function Viewer() {
-  // FollowUp에서 전달받은 X-ray 데이터
+  // 라우트 state / sessionStorage에서 X-ray 정보를 받아서 표준 형태로 정규화
   const location = useLocation();
-  const selectedXray = location.state?.selectedXray || null;
+
+  const normalized = useMemo(() => {
+    const st = location.state;
+
+    // 1) FollowUp -> { selectedXray: { originalImage, heatmapImage, date, time, diagnosis, ... } }
+    if (st?.selectedXray) {
+      const sx = st.selectedXray;
+      return {
+        patientId: sx.patientId ?? st.patientId ?? null,
+        name: sx.name ?? st.name ?? null,
+        captureTime: sx.captureTime ?? null,
+        originalImage: sx.originalImage ?? null,
+        heatmapImage: sx.heatmapImage ?? null,
+        date: sx.date ?? '-',
+        time: sx.time ?? '-',
+        diagnosis: sx.diagnosis ?? '-'
+      };
+    }
+
+    // 2) Triage_Board -> { patientId, name, captureTime, xraySrc }
+    if (st?.xraySrc) {
+      const ct = st.captureTime ?? '';
+      // captureTime이 "YYYY-MM-DD HH:mm" 같은 형태면 분리, 아니면 그대로 표시
+      const [d, t] = typeof ct === 'string' ? ct.split(' ') : ['-', '-'];
+      return {
+        patientId: st.patientId ?? null,
+        name: st.name ?? null,
+        captureTime: st.captureTime ?? null,
+        originalImage: st.xraySrc ?? null,
+        heatmapImage: null,
+        date: d || '-',
+        time: t || '-',
+        diagnosis: '-'
+      };
+    }
+
+    // 3) sessionStorage fallback (Triage_Board에서 저장)
+    try {
+      const raw = sessionStorage.getItem('REM_SELECTED_XRAY');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const ct = parsed.captureTime ?? '';
+        const [d, t] = typeof ct === 'string' ? ct.split(' ') : ['-', '-'];
+        return {
+          patientId: parsed.patientId ?? null,
+          name: parsed.name ?? null,
+          captureTime: parsed.captureTime ?? null,
+          originalImage: parsed.xraySrc ?? null,
+          heatmapImage: null,
+          date: d || '-',
+          time: t || '-',
+          diagnosis: '-'
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to read REM_SELECTED_XRAY from sessionStorage', e);
+    }
+
+    return null;
+  }, [location.state]);
 
   // 디버깅용 로그
   console.log('Viewer received state:', location.state);
-  console.log('Selected X-ray:', selectedXray);
+  console.log('Viewer normalized payload:', normalized);
 
-  // 이미지 소스 - FollowUp에서 전달받은 이미지 직접 사용
-  const originalImage = selectedXray?.originalImage || null;
-  const heatmapImage = selectedXray?.heatmapImage || null;
+  // 이미지 소스
+  // 이미지 소스
+const originalImage = normalized?.originalImage || null;
 
-  // 환자/촬영 정보
-  const patientId = 'P-2024-0847';
-  const patientName = '김영수';
+// heatmap(=fusion) 이미지가 FollowUp에서 넘어오지 않으면,
+// 원본 파일명에서 id를 뽑아 HQ_Fusion_Result_Pneumonia_{id}.jpg로 자동 매칭
+const derivedFusionImage = useMemo(() => {
+  if (!originalImage) return null;
+
+  // 예: ../assets/HQ_Original_Image_Pneumonia_191.jpg -> 191 추출
+  const m = String(originalImage).match(/_(\d+)\.jpg$/i);
+  if (!m) return null;
+
+  const id = m[1];
+  const padded = String(id).padStart(3, "0");
+
+  const key = `../assets/HQ_Fusion_Result_Pneumonia_${padded}.jpg`;
+  return FUSION_IMAGES[key] || null;
+}, [originalImage]);
+
+const heatmapImage = normalized?.heatmapImage || derivedFusionImage || null;
+  // 환자/촬영 정보 (없으면 기존 더미값 유지)
+  const patientId = normalized?.patientId || 'P-2024-0847';
+  const patientName = normalized?.name || '김영수';
   const patientInfo = 'M/67';
-  const shootDate = selectedXray?.date || '-';
-  const shootTime = selectedXray?.time || '-';
-  const diagnosis = selectedXray?.diagnosis || '-';
+  const shootDate = normalized?.date || '-';
+  const shootTime = normalized?.time || '-';
+  const diagnosis = normalized?.diagnosis || '-';
 
   // 히트맵 컨트롤 상태
   const [showHeatmap, setShowHeatmap] = useState(true);
@@ -258,7 +341,7 @@ function Viewer() {
           ) : (
             <div className="viewer-placeholder">
               <Activity size={64} strokeWidth={1} />
-              <span>Follow-up 페이지에서 X-ray를 선택해주세요</span>
+              <span>트리아지/Follow-up에서 X-ray를 선택해주세요</span>
             </div>
           )}
 

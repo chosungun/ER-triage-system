@@ -165,6 +165,22 @@
   color: #FFFFFF;
 }
 
+.navbar__avatar svg {
+  width: 16px;
+  height: 16px;
+  stroke: #FFFFFF;
+  fill: none;
+}
+
+/* in case a filled icon is used */
+.navbar__avatar svg * {
+  stroke: #FFFFFF;
+}
+
+.navbar__avatar svg [fill]:not([fill="none"]) {
+  fill: #FFFFFF;
+}
+
 .navbar__profile-name {
   font-size: 13px;
   font-weight: 500;

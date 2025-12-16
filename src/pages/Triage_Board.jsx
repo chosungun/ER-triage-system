@@ -1,5 +1,6 @@
 // src/pages/Triage_Board.jsx
-// REM XTA - Triage Board (응급실 환자 리스트)
+// REM XTA - Triage Board (KTAS 5-Level System)
+// 하단 카드: 얇은 가로 레이아웃 최적화
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,12 +17,22 @@ import {
   Eye,
   ArrowRight
 } from "lucide-react";
+// X-ray thumbnail assets
+import XRAY_191 from "../assets/HQ_Original_Image_Pneumonia_191.jpg";
+import XRAY_352 from "../assets/HQ_Original_Image_Pneumonia_352.jpg";
+import XRAY_531 from "../assets/HQ_Original_Image_Pneumonia_531.jpg";
+import XRAY_1323 from "../assets/HQ_Original_Image_Pneumonia_1323.jpg";
+import XRAY_1585 from "../assets/HQ_Original_Image_Pneumonia_1585.jpg";
+import XRAY_1892 from "../assets/HQ_Original_Image_Pneumonia_1892.jpg";
+import XRAY_2801 from "../assets/HQ_Original_Image_Pneumonia_2801.jpg";
+import XRAY_2965 from "../assets/HQ_Original_Image_Pneumonia_2965.jpg";
+import XRAY_3083 from "../assets/HQ_Original_Image_Pneumonia_3083.jpg";
 import "./Triage_Board.css";
 
 // =============================================
 // 샘플 환자 데이터 (KTAS 5단계 적용)
 // =============================================
-const samplePatients = [
+const samplePatientsBase = [
   {
     id: "P-2024-001",
     name: "김영희",
@@ -32,11 +43,11 @@ const samplePatients = [
     diagnosis: "Tension Pneumothorax",
     diagnosisKo: "긴장성 기흉",
     chiefComplaint: "호흡곤란, 흉통",
-    bloodPressure: "85/50",
-    heartRate: "128",
-    temperature: "36.8°C",
-    oxygenSat: "82%",
-    respiratoryRate: "32",
+    bp: "85/50",
+    hr: "128",
+    temp: "36.8",
+    spo2: "82",
+    rr: "32",
     gcs: "14",
     aiConfidence: 96,
     findings: ["좌측 긴장성 기흉", "종격동 편위"]
@@ -51,18 +62,18 @@ const samplePatients = [
     diagnosis: "Pneumonia",
     diagnosisKo: "폐렴",
     chiefComplaint: "고열, 기침, 호흡곤란",
-    bloodPressure: "100/65",
-    heartRate: "110",
-    temperature: "39.2°C",
-    oxygenSat: "89%",
-    respiratoryRate: "28",
+    bp: "100/65",
+    hr: "110",
+    temp: "39.2",
+    spo2: "89",
+    rr: "28",
     gcs: "15",
     aiConfidence: 94,
     findings: ["우하엽 경화", "양측 침윤"]
   },
   {
     id: "P-2024-003",
-    name: "박준혁",
+    name: "탕후루",
     age: 38,
     gender: "M",
     captureTime: "10:12",
@@ -70,11 +81,11 @@ const samplePatients = [
     diagnosis: "Cardiomegaly",
     diagnosisKo: "심비대",
     chiefComplaint: "흉통, 호흡곤란",
-    bloodPressure: "145/95",
-    heartRate: "88",
-    temperature: "36.5°C",
-    oxygenSat: "94%",
-    respiratoryRate: "20",
+    bp: "145/95",
+    hr: "88",
+    temp: "36.5",
+    spo2: "94",
+    rr: "20",
     gcs: "15",
     aiConfidence: 87,
     findings: ["심장 비대 (CTR 0.58)", "경미한 폐울혈"]
@@ -89,11 +100,11 @@ const samplePatients = [
     diagnosis: "Bronchitis",
     diagnosisKo: "기관지염",
     chiefComplaint: "기침, 가래",
-    bloodPressure: "118/75",
-    heartRate: "78",
-    temperature: "37.4°C",
-    oxygenSat: "97%",
-    respiratoryRate: "18",
+    bp: "118/75",
+    hr: "78",
+    temp: "37.4",
+    spo2: "97",
+    rr: "18",
     gcs: "15",
     aiConfidence: 82,
     findings: ["기관지 벽 비후"]
@@ -108,11 +119,11 @@ const samplePatients = [
     diagnosis: "Pleural Effusion",
     diagnosisKo: "흉수",
     chiefComplaint: "호흡곤란, 기침",
-    bloodPressure: "135/85",
-    heartRate: "92",
-    temperature: "37.8°C",
-    oxygenSat: "90%",
-    respiratoryRate: "24",
+    bp: "135/85",
+    hr: "92",
+    temp: "37.8",
+    spo2: "90",
+    rr: "24",
     gcs: "15",
     aiConfidence: 91,
     findings: ["좌측 대량 흉수", "폐 하엽 무기폐"]
@@ -127,11 +138,11 @@ const samplePatients = [
     diagnosis: "Atelectasis",
     diagnosisKo: "무기폐",
     chiefComplaint: "수술 후 경과관찰",
-    bloodPressure: "115/72",
-    heartRate: "78",
-    temperature: "37.2°C",
-    oxygenSat: "95%",
-    respiratoryRate: "18",
+    bp: "115/72",
+    hr: "78",
+    temp: "37.2",
+    spo2: "95",
+    rr: "18",
     gcs: "15",
     aiConfidence: 82,
     findings: ["좌측 하엽 무기폐", "수술 후 변화"]
@@ -146,11 +157,11 @@ const samplePatients = [
     diagnosis: "Normal",
     diagnosisKo: "정상 소견",
     chiefComplaint: "건강검진",
-    bloodPressure: "120/80",
-    heartRate: "72",
-    temperature: "36.5°C",
-    oxygenSat: "99%",
-    respiratoryRate: "16",
+    bp: "120/80",
+    hr: "72",
+    temp: "36.5",
+    spo2: "99",
+    rr: "16",
     gcs: "15",
     aiConfidence: 98,
     findings: ["특이 소견 없음"]
@@ -165,16 +176,35 @@ const samplePatients = [
     diagnosis: "Costochondritis",
     diagnosisKo: "늑연골염",
     chiefComplaint: "흉벽 통증",
-    bloodPressure: "125/78",
-    heartRate: "80",
-    temperature: "36.6°C",
-    oxygenSat: "98%",
-    respiratoryRate: "16",
+    bp: "125/78",
+    hr: "80",
+    temp: "36.6",
+    spo2: "98",
+    rr: "16",
     gcs: "15",
     aiConfidence: 75,
     findings: ["폐실질 이상 없음", "늑연골 부위 압통"]
   }
 ];
+
+// 썸네일로 쓸 X-ray 이미지 풀 (요청한 이미지들)
+const XRAY_POOL = [
+  XRAY_191,
+  XRAY_352,
+  XRAY_531,
+  XRAY_1323,
+  XRAY_1585,
+  XRAY_1892,
+  XRAY_2801,
+  XRAY_2965,
+  XRAY_3083
+];
+
+// 환자 데이터에 xraySrc 자동 주입 (환자 수가 늘어나도 순환 배정)
+const samplePatients = samplePatientsBase.map((p, idx) => ({
+  ...p,
+  xraySrc: XRAY_POOL[idx % XRAY_POOL.length]
+}));
 
 // =============================================
 // KTAS 설정 (한국형 응급환자 분류체계)
@@ -266,6 +296,27 @@ function Triage_Board() {
     setSelectedPatient(patient);
   };
 
+  // Viewer로 이동하기 전에 선택된 X-ray 정보를 "전역"(sessionStorage)으로 저장
+  // (다른 파일(Viewer)에서 그대로 읽어 같은 이미지로 렌더링 가능)
+  const handleOpenViewer = () => {
+    if (!selectedPatient?.xraySrc) return;
+
+    try {
+      sessionStorage.setItem(
+        "REM_SELECTED_XRAY",
+        JSON.stringify({
+          patientId: selectedPatient.id,
+          name: selectedPatient.name,
+          captureTime: selectedPatient.captureTime,
+          xraySrc: selectedPatient.xraySrc
+        })
+      );
+    } catch (e) {
+      // storage가 막혀있거나 용량 이슈가 있어도 화면은 계속 진행되게 둠
+      console.warn("Failed to persist selected xray to sessionStorage", e);
+    }
+  };
+
   // KTAS 아이콘 렌더링
   const getKtasIcon = (ktas) => {
     const Icon = ktasConfig[ktas].icon;
@@ -323,10 +374,7 @@ function Triage_Board() {
 
             {/* 정렬 */}
             <div className="filter-group">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                 <option value="ktas">Sort by KTAS</option>
                 <option value="time">Sort by Time</option>
               </select>
@@ -335,7 +383,7 @@ function Triage_Board() {
           </div>
         </div>
 
-        {/* 환자 테이블 */}
+        {/* 테이블 */}
         <div className="table-container">
           <table className="patients-table">
             <thead>
@@ -391,14 +439,23 @@ function Triage_Board() {
         </div>
       </section>
 
-      {/* ========== 하단: 환자 상세 정보 (1/3) ========== */}
+      {/* ========== 하단: 환자 상세 정보 (1/3) - 흰색 카드 ========== */}
       <section className="detail-section">
         {selectedPatient ? (
-          <div className="detail-content">
-            {/* X-ray 썸네일 */}
-            <div className="xray-thumbnail">
-              <div className="xray-image">
-                <Activity size={24} />
+          <div className="detail-card">
+            {/* 좌측: X-ray 썸네일 */}
+            <div className="card-xray">
+              <div className="xray-thumb">
+                {selectedPatient?.xraySrc ? (
+                  <img
+                    className="xray-img"
+                    src={selectedPatient.xraySrc}
+                    alt={`X-ray thumbnail for ${selectedPatient.id}`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <Activity size={32} />
+                )}
               </div>
               <span className="xray-time">
                 <Clock size={10} />
@@ -406,125 +463,105 @@ function Triage_Board() {
               </span>
             </div>
 
-            {/* 환자 정보 */}
-            <div className="patient-info-group">
-              {/* 이름/나이/ID/KTAS */}
-              <div className="info-header-line">
-                <span className="patient-name-large">
-                  {selectedPatient.name}
-                </span>
-                <span className="patient-meta">
-                  {selectedPatient.age}세 ·{" "}
-                  {selectedPatient.gender === "M" ? "남" : "여"}
-                </span>
-                <span className="patient-id-small">{selectedPatient.id}</span>
-                <span
-                  className="ktas-chip"
-                  style={{
-                    backgroundColor:
-                      ktasConfig[selectedPatient.ktas].bgColor,
-                    color: ktasConfig[selectedPatient.ktas].color
-                  }}
-                >
-                  KTAS {selectedPatient.ktas}
-                </span>
-              </div>
-
-              {/* 진단/주호소/AI */}
-              <div className="diagnosis-line">
-                <div className="diagnosis-item">
-                  <span className="item-label">Dx</span>
-                  <span className="item-value">
-                    {selectedPatient.diagnosis}
+            {/* 중앙: 고정 그리드 */}
+            <div className="card-grid">
+              {/* Row 1: 환자정보 | 진단 | Findings */}
+              <div className="grid-cell cell-patient">
+                <div className="cell-label">Patient</div>
+                <div className="cell-content">
+                  <span className="patient-name-lg">{selectedPatient.name}</span>
+                  <span className="patient-meta">
+                    {selectedPatient.age}세 · {selectedPatient.gender === "M" ? "남" : "여"} · {selectedPatient.id}
                   </span>
-                  <span className="item-sub">
-                    ({selectedPatient.diagnosisKo})
-                  </span>
-                </div>
-                <div className="diagnosis-item">
-                  <span className="item-label">C/C</span>
-                  <span className="item-value">
-                    {selectedPatient.chiefComplaint}
-                  </span>
-                </div>
-                <div className="diagnosis-item confidence">
-                  <span className="item-label">AI</span>
-                  <span className="confidence-value">
-                    {selectedPatient.aiConfidence}%
+                  <span
+                    className="ktas-chip"
+                    style={{
+                      backgroundColor: ktasConfig[selectedPatient.ktas].bgColor,
+                      color: ktasConfig[selectedPatient.ktas].color
+                    }}
+                  >
+                    KTAS {selectedPatient.ktas} · {ktasConfig[selectedPatient.ktas].labelKo}
                   </span>
                 </div>
               </div>
 
-              {/* 바이탈 사인 */}
-              <div className="vitals-line">
-                <div className="vital-chip">
-                  <span className="vital-label">BP</span>
-                  <span className="vital-value">
-                    {selectedPatient.bloodPressure}
-                  </span>
-                </div>
-                <div className="vital-chip">
-                  <span className="vital-label">HR</span>
-                  <span className="vital-value">
-                    {selectedPatient.heartRate}
-                  </span>
-                </div>
-                <div className="vital-chip">
-                  <span className="vital-label">T</span>
-                  <span className="vital-value">
-                    {selectedPatient.temperature}
-                  </span>
-                </div>
-                <div className="vital-chip">
-                  <span className="vital-label">SpO2</span>
-                  <span className="vital-value">
-                    {selectedPatient.oxygenSat}
-                  </span>
-                </div>
-                <div className="vital-chip">
-                  <span className="vital-label">RR</span>
-                  <span className="vital-value">
-                    {selectedPatient.respiratoryRate}
-                  </span>
-                </div>
-                <div className="vital-chip">
-                  <span className="vital-label">GCS</span>
-                  <span className="vital-value">{selectedPatient.gcs}</span>
+              <div className="grid-cell cell-diagnosis">
+                <div className="cell-label">Diagnosis</div>
+                <div className="cell-content">
+                  <span className="dx-main">{selectedPatient.diagnosis}</span>
+                  <span className="dx-sub">{selectedPatient.diagnosisKo}</span>
+                  <span className="dx-confidence">AI {selectedPatient.aiConfidence}%</span>
                 </div>
               </div>
-            </div>
 
-            {/* AI Findings + 버튼 */}
-            <div className="detail-right">
-              <div className="findings-box">
-                <span className="findings-title">AI Findings</span>
-                <div className="findings-list">
-                  {selectedPatient.findings.map((finding, idx) => (
-                    <span key={idx} className="finding-tag">
-                      {finding}
-                    </span>
+              <div className="grid-cell cell-findings">
+                <div className="cell-label">AI Findings</div>
+                <div className="cell-content">
+                  {selectedPatient.findings.map((f, i) => (
+                    <span key={i} className="finding-item">{f}</span>
                   ))}
                 </div>
               </div>
 
-              <div className="action-buttons">
-                <Link to="/followup" className="action-btn secondary">
-                  <Eye size={16} />
-                  Follow-up
-                </Link>
-                <Link to="/viewer" className="action-btn primary">
-                  <ArrowRight size={16} />
-                  Viewer
-                </Link>
+              {/* Row 2: 6대 바이탈 */}
+              <div className="grid-cell cell-vital">
+                <div className="cell-label">BP</div>
+                <div className="vital-value">{selectedPatient.bp}</div>
               </div>
+              <div className="grid-cell cell-vital">
+                <div className="cell-label">HR</div>
+                <div className="vital-value">{selectedPatient.hr} <span className="vital-unit">bpm</span></div>
+              </div>
+              <div className="grid-cell cell-vital">
+                <div className="cell-label">Temp</div>
+                <div className="vital-value">{selectedPatient.temp}<span className="vital-unit">°C</span></div>
+              </div>
+              <div className="grid-cell cell-vital">
+                <div className="cell-label">SpO₂</div>
+                <div className="vital-value">{selectedPatient.spo2}<span className="vital-unit">%</span></div>
+              </div>
+              <div className="grid-cell cell-vital">
+                <div className="cell-label">RR</div>
+                <div className="vital-value">{selectedPatient.rr} <span className="vital-unit">/min</span></div>
+              </div>
+              <div className="grid-cell cell-vital">
+                <div className="cell-label">GCS</div>
+                <div className="vital-value">{selectedPatient.gcs}</div>
+              </div>
+            </div>
+
+            {/* 우측: 액션 버튼 */}
+            <div className="card-actions">
+              <Link to="/followup" className="btn-action secondary">
+                <Eye size={14} />
+                Follow-up
+              </Link>
+              <Link
+                to="/viewer"
+                state={
+                  selectedPatient
+                    ? {
+                        patientId: selectedPatient.id,
+                        xraySrc: selectedPatient.xraySrc,
+                        captureTime: selectedPatient.captureTime,
+                        name: selectedPatient.name
+                      }
+                    : undefined
+                }
+                onClick={handleOpenViewer}
+                className="btn-action primary"
+              >
+                <ArrowRight size={14} />
+                Viewer
+              </Link>
             </div>
           </div>
         ) : (
           <div className="empty-state">
-            <User size={40} />
+            <User size={36} />
             <div className="empty-text">
-              <h3>Select a Patient</h3>
-              <p>Click on a patient row above to view details</p>
+              <span className="empty-title">Select a Patient</span>
+              <span className="empty-desc">Click on a patient row to view details</span>
             </div>
           </div>
         )}
